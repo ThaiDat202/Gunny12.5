@@ -1,0 +1,583 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using GunnySuite.Core;
+
+namespace GunnyPanel.Services;
+
+/// <summary>
+/// GM tool dùng trực tiếp DB, không phụ thuộc Road.Service.
+/// Mỗi feature là 1 request AJAX riêng để tránh timeout.
+/// </summary>
+public sealed partial class GmToolService
+{
+    private readonly SqlDatabase _db;
+
+    public GmToolService(SqlDatabase db)
+    {
+        _db = db;
+    }
+
+    public static readonly string[] FeatureOrder =
+    {
+        "king", "guard", "honor", "explorer", "titles", "sworn", "sworn_love",
+        "amulet_level", "amulet_wash", "potential", "phuma", "duchon",
+        "beads", "avatar", "album", "magicstone", "magicjade", "battle_soul"
+    };
+
+    public async Task<(bool Ok, string Message)> RunAsync(int userId, string feature)
+    {
+        try
+        {
+            return feature switch
+            {
+                "king" => await KingAsync(userId),
+                "guard" => await GuardAsync(userId),
+                "honor" => await HonorAsync(userId),
+                "explorer" => await ExplorerAsync(userId),
+                "titles" => await TitlesAsync(userId),
+                "sworn" => await SwornAsync(userId),
+                "sworn_love" => await SwornLoveAsync(userId),
+                "amulet_level" => await AmuletLevelAsync(userId),
+                "amulet_wash" => await AmuletWashAsync(userId),
+                "potential" => await PotentialAsync(userId),
+                "phuma" => await PhuMaAsync(userId),
+                "duchon" => await DucHonAsync(userId),
+                "beads" => await BeadsAsync(userId),
+                "avatar" => await AvatarAsync(userId),
+                "album" => await AlbumAsync(userId),
+                "magicstone" => await MagicStoneAsync(userId),
+                "magicjade" => await MagicJadeAsync(userId),
+                "battle_soul" => await BattleSoulAsync(userId),
+                _ => (false, "Chức năng không hợp lệ.")
+            };
+        }
+        catch (Exception ex)
+        {
+            return (false, "Lỗi: " + ex.Message);
+        }
+    }
+
+    private async Task<(bool, string)> KingAsync(int userId)
+    {
+        var (rows, err) = await _db.ExecuteAsync("Db_Tank", $@"
+UPDATE Sys_Users_Detail SET Grade = 70, GP = 857997577 WHERE UserID = @uid;
+IF NOT EXISTS (SELECT 1 FROM King_Grade_Data WHERE UserID = @uid)
+    INSERT INTO King_Grade_Data
+        (UserID, ddtKingGrade, currentExp, usableNum, AttackLevel, DefenceLevel, AgilityLevel, LuckyLevel, MagicAttackLevel, MagicDefenceLevel)
+    VALUES (@uid, 10, 0, 10, 10, 10, 10, 10, 10, 10);
+UPDATE King_Grade_Data
+SET ddtKingGrade = 10, currentExp = 0, usableNum = 10,
+    AttackLevel = 10, DefenceLevel = 10, AgilityLevel = 10,
+    LuckyLevel = 10, MagicAttackLevel = 10, MagicDefenceLevel = 10
+WHERE UserID = @uid;",
+            new Dictionary<string, object?> { ["uid"] = userId }, 60);
+
+        return err == null
+            ? (true, "Đã nâng user lên level 70 và Cấp Vua Gà level 10.")
+            : (false, err);
+    }
+
+    private async Task<(bool, string)> GuardAsync(int userId)
+    {
+        var (_, err) = await _db.ExecuteAsync("Db_Tank", @"
+UPDATE Sys_Users_Detail SET Grade = 50, GP = 63832646
+WHERE UserID = @uid AND Grade < 50;
+UPDATE Sys_Users_Detail SET guardCoreGrade = 20 WHERE UserID = @uid;",
+            new Dictionary<string, object?> { ["uid"] = userId }, 60);
+
+        return err == null
+            ? (true, "Đã nâng user tối thiểu level 50 và Bảo Vệ level 20.")
+            : (false, err);
+    }
+
+    private async Task<(bool, string)> HonorAsync(int userId)
+    {
+        var (_, err) = await _db.ExecuteAsync("Db_Tank", @"
+IF NOT EXISTS (SELECT 1 FROM Sys_Users_Honor WHERE UserID = @uid)
+    INSERT INTO Sys_Users_Honor (UserID, HonorLevel, HonorExp, Count, IsGet, GoodPeopleCardTime)
+    VALUES (@uid, 100, 0, 3, 0, GETDATE());
+UPDATE Sys_Users_Honor SET HonorLevel = 100, HonorExp = 0 WHERE UserID = @uid;",
+            new Dictionary<string, object?> { ["uid"] = userId }, 60);
+
+        return err == null ? (true, "Đã nâng Vinh Dự lên level 100.") : (false, err);
+    }
+
+    private async Task<(bool, string)> SwornAsync(int userId)
+    {
+        var (_, err) = await _db.ExecuteAsync("Db_Tank", @"
+IF NOT EXISTS (SELECT 1 FROM Sys_Users_Sworn WHERE UserID = @uid)
+    INSERT INTO Sys_Users_Sworn
+        (UserID, swornId, swornCount, todayGetSwornCount, isHasSwornItem, pveCount, pvpCount, giveCount, skillId, swornUserIDs)
+    VALUES (@uid, 9522, 124860, 0, 1, 0, 0, 0, 1072, NULL);
+UPDATE Sys_Users_Sworn
+SET swornId = 9522, swornCount = 124860, isHasSwornItem = 1, skillId = 1072
+WHERE UserID = @uid;",
+            new Dictionary<string, object?> { ["uid"] = userId }, 60);
+
+        return err == null ? (true, "Đã nâng Nhẫn Cầu Hôn level 100.") : (false, err);
+    }
+
+    private async Task<(bool, string)> ExplorerAsync(int userId)
+    {
+        var (_, err) = await _db.ExecuteAsync("Db_Tank", @"
+IF NOT EXISTS (SELECT 1 FROM Sys_Users_ExplorerManual WHERE UserID = @uid)
+    INSERT INTO Sys_Users_ExplorerManual
+        (UserID, Agility, Armor, Attack, ConditionCount, Damage, Defense, HavePage, HP, Lucky,
+         MagicAttack, MagicResistance, ManualLevel, MaxProgress, Progress, Stamina, ActivesPage, Debris)
+    VALUES (@uid, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 100, 0, 0, '', '');
+UPDATE Sys_Users_ExplorerManual
+SET ManualLevel = 21,
+    HavePage = (SELECT COUNT(*) FROM Db_Tank_All.dbo.JampsPageItemList),
+    MaxProgress = 100, Progress = 0
+WHERE UserID = @uid;
+DELETE FROM Sys_Users_ExplorerManualInfoPages WHERE UserID = @uid;
+INSERT INTO Sys_Users_ExplorerManualInfoPages (UserID, pageID, activate)
+SELECT @uid, ID, 1 FROM Db_Tank_All.dbo.JampsPageItemList;
+DELETE FROM Sys_Users_ExplorerManualInfoDebris WHERE UserID = @uid;
+INSERT INTO Sys_Users_ExplorerManualInfoDebris (UserID, ID, date, chapterID, pageID)
+SELECT @uid, d.ID, GETDATE(), p.ChapterID, d.PageID
+FROM Db_Tank_All.dbo.JampsDebrisItemList d
+INNER JOIN Db_Tank_All.dbo.JampsPageItemList p ON p.ID = d.PageID;
+IF NOT EXISTS (SELECT 1 FROM Sys_Users_ExplorerManualInfo WHERE UserID = @uid)
+    INSERT INTO Sys_Users_ExplorerManualInfo
+        (UserID, manualLevel, progress, maxProgress, havePage, conditionCount, Agility, Armor,
+         Attack, Damage, Defense, HP, Lucky, MagicAttack, MagicResistance, Stamina, jampsCurrency)
+    VALUES (@uid, 21, 1, 1, 45, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9999999);
+UPDATE Sys_Users_ExplorerManualInfo
+SET manualLevel = 21, progress = 1, maxProgress = 1, havePage = 45,
+    conditionCount = 0, jampsCurrency = 9999999
+WHERE UserID = @uid;",
+            new Dictionary<string, object?> { ["uid"] = userId }, 120);
+
+        return err == null
+            ? (true, "Đã mở full Sổ Tay Thám Hiểm Chí Tôn level 21.")
+            : (false, err);
+    }
+
+    private async Task<(bool, string)> TitlesAsync(int userId)
+    {
+        // Kiểm tra trước: user đã có đủ toàn bộ danh hiệu đang hoạt động chưa.
+        var check = await _db.QueryAsync("Db_Tank", @"
+SELECT
+    (SELECT COUNT(*) FROM Db_Tank_All.dbo.New_Title) AS Expected,
+    (SELECT COUNT(*) FROM Db_Tank_All.dbo.New_Title t
+     WHERE NOT EXISTS (
+        SELECT 1 FROM Sys_User_Rank r
+        WHERE r.UserID = @uid AND r.NewTitleID = t.ID
+          AND r.Validate = 1 AND r.IsExit = 1 AND r.EndDate > GETDATE()
+     )) AS Missing;",
+            new Dictionary<string, object?> { ["uid"] = userId }, 1, 60);
+
+        if (check.Ok && check.Rows.Count > 0)
+        {
+            var row = check.Rows[0];
+            var expected = row.Length > 0 && int.TryParse(row[0], out var exp) ? exp : 0;
+            var missing = row.Length > 1 && int.TryParse(row[1], out var miss) ? miss : 0;
+            if (expected == 0)
+                return (false, "Chưa có dữ liệu danh hiệu (bảng New_Title trong Db_Tank_All trống).");
+            if (missing == 0)
+                return (true, "Bạn đã thêm full danh hiệu rồi.");
+        }
+
+        // Chưa full: thêm lại toàn bộ danh hiệu.
+        var (_, err) = await _db.ExecuteAsync("Db_Tank", @"
+DELETE FROM Sys_User_Rank WHERE UserID = @uid;
+INSERT INTO Sys_User_Rank
+    (UserID, NewTitleID, Name, Attack, Defence, Luck, Agility, HP, Damage, Guard, BeginDate, EndDate, Validate, IsExit)
+SELECT @uid, ID, Name, Att, Def, Luck, Agi, 0, 0, 0, GETDATE(), '2099-12-31', 1, 1
+FROM Db_Tank_All.dbo.New_Title;",
+            new Dictionary<string, object?> { ["uid"] = userId }, 120);
+
+        return err == null ? (true, "Đã thêm toàn bộ danh hiệu.") : (false, err);
+    }
+
+    private async Task<(bool, string)> AmuletLevelAsync(int userId)
+    {
+        var (rows, err) = await _db.ExecuteAsync("Db_Tank", @"
+UPDATE Sys_Users_Goods
+SET StrengthenLevel = 50, StrengthenTimes = 0, IsBinds = 1
+WHERE UserID = @uid AND TemplateID = 390101 AND BagType = 0",
+            new Dictionary<string, object?> { ["uid"] = userId }, 60);
+
+        if (err != null) return (false, err);
+        return rows == 0
+            ? (false, "Bạn chưa trang bị bùa hộ thân.")
+            : (true, "Đã nâng Bùa Hộ Thân lên level 50.");
+    }
+
+    private async Task<(bool, string)> AmuletWashAsync(int userId)
+    {
+        var (rows, err) = await _db.ExecuteAsync("Db_Tank", @"
+UPDATE Sys_Users_Goods
+SET StrengthenExp = 10000,
+    Hole1 = 1, Hole2 = 2, Hole3 = 3, Hole4 = 4,
+    Hole5 = 10000, Hole6 = 10000, Hole5Exp = 10000, Hole6Exp = 10000,
+    IsBinds = 1
+WHERE UserID = @uid AND TemplateID = 390101 AND BagType = 0",
+            new Dictionary<string, object?> { ["uid"] = userId }, 60);
+
+        if (err != null) return (false, err);
+        return rows == 0
+            ? (false, "Bạn chưa trang bị bùa hộ thân.")
+            : (true, "Đã tẩy luyện Bùa Hộ Thân 10 sao, 4 chỉ số 10000.");
+    }
+
+    private async Task<(bool, string)> PotentialAsync(int userId)
+    {
+        var (rows, err) = await _db.ExecuteAsync("Db_Tank", @"
+UPDATE Sys_Users_Goods
+SET latentEnergyCurStr = '80,80,80,80',
+    latentEnergyNewStr = '80,80,80,80',
+    latentEnergyEndTime = '2099-12-31',
+    IsBinds = 1
+WHERE UserID = @uid AND BagType = 0 AND Place < 31
+  AND TemplateID IN (SELECT TemplateID FROM Db_Tank_All.dbo.Shop_Goods WHERE CategoryID IN (2,3,4,6,13,15))",
+            new Dictionary<string, object?> { ["uid"] = userId }, 60);
+
+        if (err != null) return (false, err);
+        return rows == 0
+            ? (false, "Bạn chưa trang bị Kính, Mắt, Mặt, Tóc, Set quần áo, Set cánh.")
+            : (true, $"Đã kích hoạt full Tiềm Năng cho {rows} trang bị.");
+    }
+
+    private async Task<(bool, string)> PhuMaAsync(int userId)
+    {
+        var count = await CountOwnedRingsAsync(userId);
+        if (count == 0) return (false, "Bạn chưa có nhẫn/vòng tay.");
+
+        var (_, err) = await _db.ExecuteAsync("Db_Tank", @"
+UPDATE Sys_Users_Goods
+SET MagicLevel = 40, MagicExp = 298100, IsBinds = 1
+WHERE UserID = @uid AND BagType = 0
+  AND TemplateID IN (SELECT TemplateID FROM Db_Tank_All.dbo.Shop_Goods WHERE CategoryID IN (8,9,28,29))",
+            new Dictionary<string, object?> { ["uid"] = userId }, 60);
+
+        return err == null
+            ? (true, "Đã nâng full Phụ Ma level 40 cho nhẫn/vòng tay đang trang bị.")
+            : (false, err);
+    }
+
+    private async Task<(bool, string)> DucHonAsync(int userId)
+    {
+        var count = await CountOwnedRingsAsync(userId);
+        if (count == 0) return (false, "Bạn chưa có nhẫn/vòng tay.");
+
+        var (_, err) = await _db.ExecuteAsync("Db_Tank", @"
+UPDATE Sys_Users_Goods
+SET enchantSpiritLevel = 20, IsBinds = 1
+WHERE UserID = @uid AND BagType = 0
+  AND TemplateID IN (SELECT TemplateID FROM Db_Tank_All.dbo.Shop_Goods WHERE CategoryID IN (8,9,28,29))",
+            new Dictionary<string, object?> { ["uid"] = userId }, 60);
+
+        return err == null
+            ? (true, "Đã nâng full Đúc Hồn level 20 cho nhẫn/vòng tay đang trang bị.")
+            : (false, err);
+    }
+
+    private async Task<int> CountOwnedRingsAsync(int userId)
+    {
+        var result = await _db.QueryAsync("Db_Tank", @"
+SELECT COUNT(*) AS Cnt FROM Sys_Users_Goods
+WHERE UserID = @uid AND BagType = 0
+  AND TemplateID IN (SELECT TemplateID FROM Db_Tank_All.dbo.Shop_Goods WHERE CategoryID IN (8,9,28,29))",
+            new Dictionary<string, object?> { ["uid"] = userId }, 1);
+        return int.TryParse(result.FirstCell(), out var n) ? n : 0;
+    }
+
+    private async Task<(bool, string)> AvatarAsync(int userId)
+    {
+        // 1. Tính số bộ / số trang bị của Bộ Sưu Tập đầy đủ từ dữ liệu Cloth.
+        var expected = await _db.QueryAsync("Db_Tank", @"
+;WITH Groups AS
+(
+    SELECT p.ID, p.Sex, COUNT(g.TemplateID) AS Cnt
+    FROM Db_Tank_All.dbo.Cloth_Property_Template p
+    LEFT JOIN Db_Tank_All.dbo.Cloth_Group_Template g ON g.ID = p.ID AND g.Sex = p.Sex
+    WHERE p.Sex IN (1,2,3)
+    GROUP BY p.ID, p.Sex
+)
+SELECT COUNT(*) AS Sets,
+       ISNULL(SUM(Cnt),0) AS Items,
+       ISNULL(SUM(CASE WHEN Sex=1 THEN 1 ELSE 0 END),0) AS Male,
+       ISNULL(SUM(CASE WHEN Sex=2 THEN 1 ELSE 0 END),0) AS Female,
+       ISNULL(SUM(CASE WHEN Sex=3 THEN 1 ELSE 0 END),0) AS Other
+FROM Groups WHERE Cnt > 0;",
+            new Dictionary<string, object?> { ["uid"] = userId }, 1, 60);
+
+        if (expected.Ok && expected.Rows.Count > 0)
+        {
+            var er = expected.Rows[0];
+            var expSets = er.Length > 0 && int.TryParse(er[0], out var es) ? es : 0;
+            var expItems = er.Length > 1 && long.TryParse(er[1], out var ei) ? ei : 0;
+            if (expSets == 0)
+                return (false, "Chưa có dữ liệu Bộ Sưu Tập (Cloth_Group_Template / Cloth_Property_Template trong Db_Tank_All trống).");
+
+            // 2. Kiểm tra user đã có đủ các bộ + đủ số trang bị CHƯA, và dữ liệu có HỢP LỆ không.
+            //    Lưu ý: server tạo "placeholder" lúc login (endTime = hôm qua, ActiveDress = '')
+            //    cho những bộ chưa sưu tầm — nếu chỉ đếm số dòng thì tưởng là full và bỏ qua.
+            var current = await _db.QueryAsync("Db_Tank", @"
+SELECT COUNT(*) AS Sets,
+       ISNULL(SUM(ActiveCount),0) AS Items,
+       COUNT(DISTINCT CONCAT(CAST(dataId AS varchar(20)), '-', CAST(Sex AS varchar(10)))) AS DistinctSets,
+       ISNULL(SUM(CASE WHEN LTRIM(RTRIM(ISNULL(ActiveDress,''))) = '' THEN 1 ELSE 0 END),0) AS EmptyDress,
+       ISNULL(SUM(CASE WHEN endTime < CAST(GETDATE() AS date) THEN 1 ELSE 0 END),0) AS Expired
+FROM User_Avatar_Colection WHERE UserID = @uid;",
+                new Dictionary<string, object?> { ["uid"] = userId }, 1, 30);
+
+            if (current.Ok && current.Rows.Count > 0)
+            {
+                var cr = current.Rows[0];
+                var curSets = cr.Length > 0 && int.TryParse(cr[0], out var cs) ? cs : 0;
+                var curItems = cr.Length > 1 && long.TryParse(cr[1], out var ci) ? ci : 0;
+                var curDistinct = cr.Length > 2 && int.TryParse(cr[2], out var cd) ? cd : 0;
+                var curEmptyDress = cr.Length > 3 && int.TryParse(cr[3], out var ce) ? ce : 0;
+                var curExpired = cr.Length > 4 && int.TryParse(cr[4], out var cx) ? cx : 0;
+                if (curSets == expSets && curItems == expItems && curDistinct == expSets
+                    && curEmptyDress == 0 && curExpired == 0)
+                    return (true, "Bạn đã thêm full Bộ Sưu Tập rồi.");
+            }
+        }
+
+        // 3. Chưa full: thay bằng dữ liệu full mới.
+        var (_, err) = await _db.ExecuteAsync("Db_Tank", @"
+DELETE FROM User_Avatar_Colection WHERE UserID = @uid;
+;WITH Groups AS
+(
+    SELECT p.ID, p.Sex,
+           COUNT(g.TemplateID) AS Cnt,
+           STUFF((SELECT ',' + CAST(g2.TemplateID AS varchar(20))
+                  FROM Db_Tank_All.dbo.Cloth_Group_Template g2
+                  WHERE g2.ID = p.ID AND g2.Sex = p.Sex
+                  ORDER BY g2.TemplateID
+                  FOR XML PATH('')), 1, 1, '') AS Dress
+    FROM Db_Tank_All.dbo.Cloth_Property_Template p
+    LEFT JOIN Db_Tank_All.dbo.Cloth_Group_Template g ON g.ID = p.ID AND g.Sex = p.Sex
+    WHERE p.Sex IN (1,2,3)
+    GROUP BY p.ID, p.Sex
+)
+INSERT INTO User_Avatar_Colection (UserID, endTime, dataId, ActiveCount, Sex, ActiveDress)
+SELECT @uid, '2099-12-31', ID, Cnt, Sex, ISNULL(Dress, '')
+FROM Groups WHERE Cnt > 0;",
+            new Dictionary<string, object?> { ["uid"] = userId }, 120);
+
+        if (err != null) return (false, err);
+
+        // 4. Đọc lại để báo rõ đã mở bao nhiêu bộ / trang bị, đồng thời xác nhận dữ liệu hợp lệ.
+        var counts = await _db.QueryAsync("Db_Tank", @"
+SELECT COUNT(*) AS Sets,
+       ISNULL(SUM(ActiveCount), 0) AS Items,
+       ISNULL(SUM(CASE WHEN Sex = 1 THEN 1 ELSE 0 END), 0) AS Male,
+       ISNULL(SUM(CASE WHEN Sex = 2 THEN 1 ELSE 0 END), 0) AS Female,
+       ISNULL(SUM(CASE WHEN Sex = 3 THEN 1 ELSE 0 END), 0) AS Other,
+       ISNULL(SUM(CASE WHEN LTRIM(RTRIM(ISNULL(ActiveDress,''))) = '' THEN 1 ELSE 0 END), 0) AS EmptyDress,
+       ISNULL(SUM(CASE WHEN endTime < CAST(GETDATE() AS date) THEN 1 ELSE 0 END), 0) AS Expired
+FROM User_Avatar_Colection WHERE UserID = @uid",
+            new Dictionary<string, object?> { ["uid"] = userId }, 1, 30);
+
+        if (counts.Ok && counts.Rows.Count > 0)
+        {
+            var row = counts.Rows[0];
+            var sets = row.Length > 0 && int.TryParse(row[0], out var s) ? s : 0;
+            var items = row.Length > 1 && long.TryParse(row[1], out var n) ? n : 0;
+            var male = row.Length > 2 && int.TryParse(row[2], out var m) ? m : 0;
+            var female = row.Length > 3 && int.TryParse(row[3], out var f) ? f : 0;
+            var other = row.Length > 4 && int.TryParse(row[4], out var o) ? o : 0;
+            var emptyDress = row.Length > 5 && int.TryParse(row[5], out var ed) ? ed : 0;
+            var expired = row.Length > 6 && int.TryParse(row[6], out var ex) ? ex : 0;
+            if (sets == 0)
+                return (false, "Chưa có dữ liệu Bộ Sưu Tập (Cloth_Group_Template / Cloth_Property_Template trong Db_Tank_All trống).");
+            if (emptyDress > 0 || expired > 0)
+                return (false,
+                    $"Ghi Bộ Sưu Tập chưa hợp lệ: {emptyDress} bộ thiếu ActiveDress, {expired} bộ hết hạn (cần kiểm tra dữ liệu Cloth trong Db_Tank_All).");
+            return (true,
+                $"Đã mở full Bộ Sưu Tập: {sets} bộ / {items:N0} trang bị (Nam {male}, Nữ {female}, Khác {other}) — vĩnh viễn.");
+        }
+
+        return (true, "Đã mở full Bộ Sưu Tập trang phục/vũ khí (vĩnh viễn).");
+    }
+
+    /// <summary>
+    /// Chiến Hồn (FigSpirit) — 5 slot cố định trong Sys_User_Gemstone.EquipPlace:
+    /// 2 = Tấn công (100001), 3 = May mắn (100004), 5 = Nhạy nhẹn (100003),
+    /// 11 = Phòng thủ (100002), 13 = Máu (100005). Mỗi dòng có 3 mức "level,exp,place".
+    ///
+    /// Luôn UPSERT (chuẩn hoá loại + level + tạo slot thiếu) vì:
+    ///  - Server chỉ tạo 5 dòng mặc định trong GamePlayer.LoadGemStone khi user CHƯA có dòng ngọc nào
+    ///    → nick mới đã nhận Ngọc (EquipPlace 0) sẽ KHÔNG có dòng Chiến Hồn nào.
+    ///  - Slot 2/3/5 đôi khi bị dòng Ngọc (470xx) chiếm chỗ → client không hiểu loại → tooltip trống.
+    /// </summary>
+    private async Task<(bool, string)> BattleSoulAsync(int userId)
+    {
+        const string maxValue = "6,0,0|6,0,1|6,0,2";
+
+        var (_, err) = await _db.ExecuteAsync("Db_Tank", @"
+DECLARE @map TABLE (place int PRIMARY KEY, spiritId int NOT NULL);
+INSERT INTO @map (place, spiritId) VALUES (2,100001),(3,100004),(5,100003),(11,100002),(13,100005);
+
+-- 1) Dòng KHÔNG phải Chiến Hồn đang chiếm slot → trả về túi ngọc (EquipPlace = 0), không xoá item.
+UPDATE g SET g.EquipPlace = 0
+FROM Sys_User_Gemstone g
+JOIN @map m ON m.place = g.EquipPlace
+WHERE g.UserID = @uid
+  AND g.FigSpiritId NOT IN (100001,100002,100003,100004,100005);
+
+-- 2) Nếu 1 slot có nhiều dòng Chiến Hồn thì giữ dòng ID nhỏ nhất.
+;WITH d AS
+(
+    SELECT g.ID, ROW_NUMBER() OVER (PARTITION BY g.EquipPlace ORDER BY g.ID) AS rn
+    FROM Sys_User_Gemstone g
+    JOIN @map m ON m.place = g.EquipPlace
+    WHERE g.UserID = @uid
+      AND g.FigSpiritId IN (100001,100002,100003,100004,100005)
+)
+DELETE FROM Sys_User_Gemstone WHERE ID IN (SELECT ID FROM d WHERE rn > 1);
+
+-- 3) Chuẩn hoá dòng đã có: đúng loại hồn + level 6.
+UPDATE g SET g.FigSpiritId = m.spiritId, g.FigSpiritIdValue = @val
+FROM Sys_User_Gemstone g
+JOIN @map m ON m.place = g.EquipPlace
+WHERE g.UserID = @uid;
+
+-- 4) Tạo các slot còn thiếu.
+INSERT INTO Sys_User_Gemstone (UserID, FigSpiritId, FigSpiritIdValue, EquipPlace)
+SELECT @uid, m.spiritId, @val, m.place
+FROM @map m
+WHERE NOT EXISTS (SELECT 1 FROM Sys_User_Gemstone g WHERE g.UserID = @uid AND g.EquipPlace = m.place);",
+            new Dictionary<string, object?> { ["uid"] = userId, ["val"] = maxValue }, 60);
+
+        if (err != null) return (false, err);
+
+        var check = await _db.QueryAsync("Db_Tank", @"
+SELECT EquipPlace, FigSpiritId, FigSpiritIdValue
+FROM Sys_User_Gemstone
+WHERE UserID = @uid AND EquipPlace IN (2,3,5,11,13)
+ORDER BY EquipPlace;",
+            new Dictionary<string, object?> { ["uid"] = userId }, 10, 30);
+
+        if (!check.Ok || check.Rows.Count != 5)
+            return (false, $"Chiến Hồn chưa đủ 5 slot (hiện {check.Rows.Count}) — kiểm tra bảng Sys_User_Gemstone.");
+
+        var bad = 0;
+        foreach (var r in check.Rows)
+        {
+            var spirit = r.Length > 1 && int.TryParse(r[1], out var sid) ? sid : 0;
+            var value = r.Length > 2 ? (r[2] ?? "") : "";
+            if (spirit < 100001 || spirit > 100005 || value != maxValue) bad++;
+        }
+        if (bad > 0)
+            return (false, $"Chiến Hồn ghi chưa đúng ở {bad}/5 slot — kiểm tra lại dữ liệu.");
+
+        return (true,
+            "Đã nâng Chiến Hồn lên tối đa: 5/5 slot (Tấn công, May mắn, Nhạy nhẹn, Phòng thủ, Máu) — level 6, đúng loại hồn.");
+    }
+
+    private async Task<(bool, string)> BeadsAsync(int userId)
+    {
+        var (_, err) = await _db.ExecuteAsync("Db_Tank", @"
+DELETE FROM Sys_User_Drills WHERE UserID = @uid;
+INSERT INTO Sys_User_Drills (UserID, BeadPlace, HoleExp, HoleLv, DrillPlace) VALUES
+(@uid, 13, 0, 6, 0),
+(@uid, 14, 0, 6, 1),
+(@uid, 15, 0, 6, 2),
+(@uid, 16, 0, 6, 3),
+(@uid, 17, 0, 6, 4),
+(@uid, 18, 0, 6, 5);",
+            new Dictionary<string, object?> { ["uid"] = userId }, 60);
+
+        if (err != null) return (false, err);
+
+        foreach (var id in new[] { 313615, 313623, 313622, 313621 })
+        {
+            var (ok, mailErr) = await SendMailAsync(userId, id, 15);
+            if (!ok) return (false, mailErr);
+        }
+        foreach (var id in new[] { 311545, 312519, 312521, 311541, 311540 })
+        {
+            var (ok, mailErr) = await SendMailAsync(userId, id, 1);
+            if (!ok) return (false, mailErr);
+        }
+
+        return (true, "Đã mở full 6 mũi khoan và gửi châu báu vào hộp thư.");
+    }
+
+    private async Task<(bool, string)> MagicStoneAsync(int userId)
+    {
+        var countResult = await _db.QueryAsync("Db_Tank",
+            "SELECT COUNT(*) FROM Sys_Users_Goods WHERE UserID = @uid AND BagType = 41",
+            new Dictionary<string, object?> { ["uid"] = userId }, 1);
+        var count = int.TryParse(countResult.FirstCell(), out var n) ? n : 0;
+
+        if (count == 0)
+        {
+            for (var i = 0; i < 8; i++)
+            {
+                var (ok, mailErr) = await SendMailAsync(userId, 100906, 1, 10);
+                if (!ok) return (false, mailErr);
+            }
+            await PatchMagicStoneMailRowsAsync(userId, 100906);
+            return (true, "Chưa có ma thạch: đã gửi 8 Ma Thạch Tứ Tượng level 10 (đủ 6 chỉ số) vào hộp thư.");
+        }
+
+        // Nâng toàn bộ ma thạch hiện có lên max (đủ 6 chỉ số) theo template chuẩn.
+        var (_, err) = await _db.ExecuteAsync("Db_Tank", @"
+UPDATE g
+SET StrengthenLevel = t.Level, StrengthenExp = t.Exp,
+    AttackCompose = t.Attack, DefendCompose = t.Defence,
+    AgilityCompose = t.Agility, LuckCompose = t.Luck,
+    MagicAttack = t.MagicAttack, MagicDefence = t.MagicDefence
+FROM Sys_Users_Goods AS g
+INNER JOIN Db_Tank_All.dbo.Magicstone_Template AS t
+    ON t.TemplateID = g.TemplateID
+   AND t.Level = (SELECT MAX(t2.Level) FROM Db_Tank_All.dbo.Magicstone_Template AS t2 WHERE t2.TemplateID = g.TemplateID)
+WHERE g.UserID = @uid AND g.BagType = 41",
+            new Dictionary<string, object?> { ["uid"] = userId }, 60);
+        if (err != null) return (false, err);
+
+        return (true, "Đã nâng full level/exp + đủ 6 chỉ số cho ma thạch hiện có.");
+    }
+
+    private async Task PatchMagicStoneMailRowsAsync(int userId, int templateId)
+    {
+        // SP_Admin_SendUserItem chỉ insert 4 compose stat; bơm đủ 6 chỉ số từ Magicstone_Template.
+        // Lưu ý: T-SQL không dùng alias trong SET (SET g.col=... sẽ update 0 dòng).
+        var (_, _) = await _db.ExecuteAsync("Db_Tank", @"
+UPDATE g
+SET StrengthenLevel = t.Level, StrengthenExp = t.Exp,
+    AttackCompose = t.Attack, DefendCompose = t.Defence,
+    AgilityCompose = t.Agility, LuckCompose = t.Luck,
+    MagicAttack = t.MagicAttack, MagicDefence = t.MagicDefence
+FROM Sys_Users_Goods AS g
+INNER JOIN User_Messages AS m ON m.Annex1 = CONVERT(nvarchar(20), g.ItemID)
+INNER JOIN Db_Tank_All.dbo.Magicstone_Template AS t
+    ON t.TemplateID = g.TemplateID
+   AND t.Level = (SELECT MAX(t2.Level) FROM Db_Tank_All.dbo.Magicstone_Template AS t2 WHERE t2.TemplateID = g.TemplateID)
+WHERE m.ReceiverID = @uid AND g.TemplateID = @tpl",
+            new Dictionary<string, object?> { ["uid"] = userId, ["tpl"] = templateId }, 60);
+    }
+
+    private async Task<(bool, string)> SendMailAsync(int userId, int templateId, int count, int strengthenLevel = 0)
+    {
+        var (rows, err) = await _db.ExecuteAsync("Db_Tank", @"
+EXEC dbo.SP_Admin_SendUserItem
+    @ItemID = 0, @UserID = @uid, @TemplateID = @tpl, @Place = -1, @Count = @count,
+    @IsJudge = 0, @Color = N'', @IsExist = 1,
+    @StrengthenLevel = @strength, @AttackCompose = 0, @DefendCompose = 0,
+    @LuckCompose = 0, @AgilityCompose = 0, @IsBinds = 1, @BeginDate = @now,
+    @ValidDate = 0, @BagType = 1, @ID = 0, @SenderID = 0, @Sender = N'GM Tool',
+    @ReceiverID = @uid, @Receiver = N'', @Title = N'Phần thưởng GM',
+    @Content = N'Vật phẩm từ GM Tool', @SendTime = @now,
+    @IsRead = 0, @IsDelR = 0, @IfDelS = 0, @IsDelete = 0,
+    @Annex1 = N'', @Annex2 = N'', @Gold = 0, @Money = 0",
+            new Dictionary<string, object?>
+            {
+                ["uid"] = userId,
+                ["tpl"] = templateId,
+                ["count"] = count,
+                ["strength"] = strengthenLevel,
+                ["now"] = DateTime.Now
+            }, 30);
+
+        return err == null ? (true, "") : (false, err);
+    }
+}

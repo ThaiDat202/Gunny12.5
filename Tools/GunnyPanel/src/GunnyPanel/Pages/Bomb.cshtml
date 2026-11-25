@@ -1,0 +1,119 @@
+@page
+@model GunnyPanel.Pages.BombModel
+@{
+    ViewData["Title"] = "Bomb Studio";
+    ViewData["Subtitle"] = "Convert .bomb ⇄ PNG, xem mask và tải kết quả";
+    var pngPager = new GunnyPanel.Pages.Shared.Pager
+    {
+        Page = Model.PngPage,
+        PageSize = GunnyPanel.Pages.BombModel.PageSize,
+        Total = Model.PngTotal,
+        Path = "/Bomb",
+        PageParam = "ppage"
+    };
+    var bombPager = new GunnyPanel.Pages.Shared.Pager
+    {
+        Page = Model.BombPage,
+        PageSize = GunnyPanel.Pages.BombModel.PageSize,
+        Total = Model.BombTotal,
+        Path = "/Bomb",
+        PageParam = "bpage"
+    };
+}
+
+<div class="grid">
+    <section class="card">
+        <h2>Nguồn .bomb (chỉ đọc)</h2>
+        <table class="mini">
+            <tr><td><b>Road</b></td><td class="mono small">@Model.SourceDir</td><td class="mono">@Model.SourceCount file</td></tr>
+            <tr><td><b>Fight</b></td><td class="mono small">@Model.FightDir</td><td class="mono">@Model.FightCount file</td></tr>
+        </table>
+        <p class="muted small" style="margin-top:10px;">Không sửa file trong <code>Service</code>. Muốn convert hàng loạt, dùng <a href="/Jobs">Jobs → 5) Chuyển đổi Bomb</a>.</p>
+    </section>
+
+    <section class="card">
+        <h2>Kết quả convert</h2>
+        <table class="mini">
+            <tr><td><b>PNG</b></td><td class="mono">@Model.PngTotal file</td><td class="mono small">@Model.PngDir</td></tr>
+            <tr><td><b>.bomb</b></td><td class="mono">@Model.BombTotal file</td><td class="mono small">@Model.BombDir</td></tr>
+        </table>
+        <p class="muted small" style="margin-top:10px;">Kết quả chỉ ghi trong <code>GunnyPanel\data\out</code>.</p>
+    </section>
+
+    <section class="card">
+        <h2>Upload &amp; convert</h2>
+        @if (!string.IsNullOrEmpty(Model.Message))
+        {
+            <div class="alert info">@Model.Message</div>
+        }
+        @if (!string.IsNullOrEmpty(Model.Error))
+        {
+            <div class="alert danger">@Model.Error</div>
+        }
+        <form method="post" enctype="multipart/form-data" asp-page-handler="Upload">
+            <div class="upload-box">
+                <label>File .bomb hoặc .png (tối đa 32 MB)</label>
+                <input type="file" name="Upload" accept=".bomb,.png" />
+            </div>
+            <label>Ngưỡng sáng (PNG → .bomb)</label>
+            <input type="number" name="Threshold" value="@Model.Threshold" min="1" max="254" />
+            <p class="muted small" style="margin:8px 0 0;">Tự nhận diện: <code>.bomb</code> → PNG (mask trắng/đen); <code>.png</code> → .bomb (alpha &gt; 0 và độ sáng ≥ ngưỡng).</p>
+            <button type="submit" class="btn primary"><i class="fa fa-bolt"></i> Convert file</button>
+        </form>
+    </section>
+</div>
+
+<section class="card">
+    <div class="page-head">
+        <h2>Mask PNG <span class="muted small">(@Model.PngTotal)</span></h2>
+        <span class="muted small">Bấm ảnh để tải PNG gốc</span>
+    </div>
+    @if (Model.PngTotal == 0)
+    {
+        <p class="muted">Chưa có PNG. Vào <a href="/Jobs">Jobs</a> chạy job Bomb (.bomb → PNG) hoặc upload file ở trên.</p>
+    }
+    else
+    {
+        <div class="gallery">
+            @foreach (var name in Model.PngFiles)
+            {
+                <div class="item">
+                    <a href="?handler=Download&kind=png&name=@Uri.EscapeDataString(name)" title="Tải @name">
+                        <img src="?handler=Image&name=@Uri.EscapeDataString(name)" alt="@name" loading="lazy" />
+                    </a>
+                    <div class="name">@System.IO.Path.GetFileNameWithoutExtension(name)</div>
+                </div>
+            }
+        </div>
+        <partial name="_Pager" model="pngPager" />
+    }
+</section>
+
+<section class="card">
+    <div class="page-head">
+        <h2>File .bomb kết quả <span class="muted small">(@Model.BombTotal)</span></h2>
+    </div>
+    @if (Model.BombTotal == 0)
+    {
+        <p class="muted">Chưa có file .bomb. Upload PNG ở trên hoặc chạy job PNG → .bomb.</p>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="list compact">
+                <thead><tr><th>File</th><th>Kích thước</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var name in Model.BombFiles)
+                {
+                    <tr>
+                        <td class="mono">@name</td>
+                        <td class="muted small">@((new System.IO.FileInfo(System.IO.Path.Combine(Model.BombDir, name)).Length / 1024.0).ToString("0.0")) KB</td>
+                        <td><a class="btn small" href="?handler=Download&kind=bomb&name=@Uri.EscapeDataString(name)"><i class="fa fa-download"></i> Tải</a></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <partial name="_Pager" model="bombPager" />
+    }
+</section>

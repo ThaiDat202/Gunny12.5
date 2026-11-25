@@ -1,0 +1,103 @@
+@page
+@model GunnyPanel.Pages.IndexModel
+@{
+    ViewData["Title"] = "Tổng quan";
+    ViewData["Subtitle"] = "Tình trạng server, job và dữ liệu của Gunny Panel";
+    var helloName = User?.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value
+                    ?? User?.Identity?.Name ?? "GM";
+}
+
+<section class="hero">
+    <div class="hero-content">
+        <span class="hero-eyebrow"><i class="fa fa-bolt"></i> Gunny tool center</span>
+        <h2>Chào <em>@helloName</em> trở lại!</h2>
+        <p>Quản lý server, đồng bộ XML từ quest VNG, chạy SQL và theo dõi job — tất cả trong một panel nội bộ.</p>
+        <div class="hero-actions">
+            <a class="btn primary" href="/Jobs"><i class="fa fa-tools"></i> Jobs &amp; Tools</a>
+            <a class="btn ghost" href="/Xml"><i class="fa fa-file"></i> XML Explorer</a>
+            <a class="btn ghost" href="/Db"><i class="fa fa-database"></i> DB Query</a>
+            <a class="btn ghost" href="/Audit"><i class="fa fa-history"></i> Audit log</a>
+        </div>
+    </div>
+</section>
+
+<div class="grid">
+    <section class="card">
+        <h2>Kết nối SQL</h2>
+        <table class="mini">
+            @foreach (var db in Model.Dbs)
+            {
+                <tr>
+                    <td><b>@db.Name</b></td>
+                    <td class="@(db.Ok ? "ok" : "bad")">
+                        <i class="fa @(db.Ok ? "fa-check" : "fa-times")"></i> @(db.Ok ? "OK" : "FAIL")
+                    </td>
+                    <td class="muted small">@db.Text</td>
+                </tr>
+            }
+        </table>
+    </section>
+
+    <section class="card">
+        <h2>Quest server VNG</h2>
+        <p class="@(Model.VngOk ? "ok" : "bad")" style="font-size:15px;">
+            <i class="fa @(Model.VngOk ? "fa-check" : "fa-times")"></i> @(Model.VngOk ? "OK" : "FAIL") — @Model.VngText
+        </p>
+        <p class="muted small" style="word-break:break-all;">@Model.VngUrl</p>
+        <a class="btn small" href="/Jobs"><i class="fa fa-refresh"></i> Sync XML ngay</a>
+    </section>
+
+    <section class="card">
+        <h2>Nguồn XML cho Tool XML</h2>
+        <p class="muted small" style="margin-top:0;">Db_Gm.dbo.Url_Tank</p>
+        <p style="font-size:15px; word-break:break-all;"><b>@(Model.UrlTankName ?? "(chưa đọc được)")</b></p>
+        <p class="muted small">Detail: @(Model.UrlTankDetail ?? "-")</p>
+        <a class="btn small" href="/Jobs"><i class="fa fa-cogs"></i> Cập nhật Url_Tank →</a>
+    </section>
+
+    <section class="card">
+        <h2>Đường dẫn dữ liệu</h2>
+        <table class="mini">
+            @foreach (var p in Model.Paths)
+            {
+                <tr>
+                    <td><b>@p.Label</b></td>
+                    <td class="@(p.Exists ? "ok" : "bad")">
+                        <i class="fa @(p.Exists ? "fa-check" : "fa-times")"></i>
+                    </td>
+                    <td class="muted small" style="word-break:break-all;">@p.Path</td>
+                </tr>
+            }
+        </table>
+    </section>
+</div>
+
+<section class="card">
+    <h2>Jobs gần đây</h2>
+    @if (Model.Jobs.Count == 0)
+    {
+        <p class="muted">Chưa có job nào. Vào <a href="/Jobs">Jobs &amp; Tools</a> để chạy.</p>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="list">
+                <thead>
+                <tr><th>Thời gian</th><th>Loại</th><th>Người tạo</th><th>Trạng thái</th><th>Kết quả</th></tr>
+                </thead>
+                <tbody>
+                @foreach (var job in Model.Jobs)
+                {
+                    <tr>
+                        <td class="mono">@job.CreatedAt.ToString("dd/MM HH:mm:ss")</td>
+                        <td>@job.Title</td>
+                        <td>@job.CreatedBy</td>
+                        <td class="@(job.Status == JobStatus.Success ? "ok" : job.Status == JobStatus.Failed ? "bad" : "")">@job.Status (@job.Progress%)</td>
+                        <td class="muted small">@(job.Error ?? job.Result)</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

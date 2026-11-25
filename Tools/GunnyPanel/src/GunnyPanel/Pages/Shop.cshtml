@@ -1,0 +1,531 @@
+@page "/Shop"
+@model GunnyPanel.Pages.ShopModel
+@{
+    ViewData["Title"] = "Shop Explorer";
+    ViewData["Subtitle"] = "Duyệt Db_Tank_All.dbo.Shop_Goods (15.060 item) — tra cứu thể loại, chỉ số, ảnh — chế độ chỉ đọc";
+    var hasFilter = !string.IsNullOrWhiteSpace(Model.Q) || Model.Cat != null || Model.Quality != null || Model.Sort != "tid";
+}
+
+@section Head {
+    <style>
+        /* ===== Shop Explorer — CSS riêng, prefix shop- ===== */
+        .shop-filters {
+            display: grid;
+            grid-template-columns: minmax(220px, 1.6fr) repeat(3, minmax(150px, 1fr));
+            gap: 0 16px;
+            align-items: end;
+            margin-top: 4px;
+        }
+        .shop-filters .shop-filter-field { min-width: 0; }
+        .shop-filters label { margin-top: 10px; }
+        .shop-filter-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        @@media (max-width: 980px) {
+            .shop-filters { grid-template-columns: 1fr 1fr; }
+        }
+        @@media (max-width: 560px) {
+            .shop-filters { grid-template-columns: 1fr; }
+        }
+
+        .shop-result-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 16px 0 0;
+        }
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .shop-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 8px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: #fff;
+            min-width: 0;
+            transition: border-color .14s, background .14s, box-shadow .14s;
+        }
+        .shop-item:hover { border-color: #c9b48c; background: #fdfaf4; }
+        .shop-item-active { border-color: var(--amber); background: #fdf8ee; box-shadow: 0 0 0 2px rgba(201, 138, 60, .18); }
+        .shop-item-main {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            min-width: 0;
+            color: var(--text);
+            text-decoration: none;
+        }
+        .shop-item-main:hover { text-decoration: none; color: var(--text); }
+        .shop-item .item-thumb { width: 54px; height: 54px; }
+        .shop-item-info { min-width: 0; display: flex; flex-direction: column; gap: 2px; line-height: 1.3; }
+        .shop-item-name {
+            font-weight: 650;
+            font-size: 12.5px;
+            color: var(--navy);
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        .shop-item-cat {
+            font-size: 11px;
+            color: #5a6d8a;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .shop-item-meta { font-size: 11px; color: var(--muted); }
+        .shop-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+        .shop-tag {
+            font-size: 10px;
+            font-weight: 650;
+            border-radius: 999px;
+            padding: 1px 7px;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+        .shop-tag-gold { background: #fcf3e3; color: #a06b22; border-color: #ecd7b6; }
+        .shop-tag-stats { background: #eaf3fb; color: #35628f; border-color: #cfe0f2; }
+        .shop-tag-strength { background: #eef6ee; color: #2f7a4d; border-color: #cbe5d2; }
+        .shop-item-actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: auto; }
+        .shop-item-actions .btn { margin: 0; padding: 4px 10px; font-size: 11.5px; }
+        .shop-thumb-fallback {
+            font-size: 9px;
+            line-height: 1.15;
+            text-align: center;
+            padding: 3px;
+            color: var(--muted);
+        }
+
+        /* ----- Card chi tiết ----- */
+        .shop-detail-head { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
+        .shop-detail-thumb { width: 96px; height: 96px; border-radius: 12px; }
+        .shop-detail-main { min-width: 0; flex: 1 1 260px; }
+        .shop-detail-name { font-size: 16px; font-weight: 700; color: var(--navy); line-height: 1.3; }
+        .shop-detail-meta {
+            color: var(--muted);
+            font-size: 12px;
+            margin: 4px 0 6px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .shop-detail-pill {
+            background: #f4f7fb;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 2px 10px;
+            font-size: 11.5px;
+            color: #55688a;
+        }
+        .shop-detail-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+        .shop-section-title {
+            font-size: 11px;
+            font-weight: 650;
+            text-transform: uppercase;
+            letter-spacing: .45px;
+            color: #5a6d8a;
+            margin: 18px 0 6px;
+            border-bottom: 1px solid var(--line-soft);
+            padding-bottom: 4px;
+        }
+        .shop-kv { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 22px; }
+        .shop-kv-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 4px 0;
+            border-bottom: 1px dashed var(--line-soft);
+        }
+        .shop-kv-label { color: var(--muted); font-size: 12px; white-space: nowrap; }
+        .shop-kv-value {
+            font-size: 12.5px;
+            font-weight: 600;
+            text-align: right;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        .shop-flags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+        .shop-flag { font-size: 11.5px; font-weight: 600; border-radius: 8px; padding: 3px 9px; border: 1px solid var(--line); }
+        .shop-flag-on { background: #eef6ee; color: #2f7a4d; border-color: #cbe5d2; }
+        .shop-flag-off { background: #f7f8fa; color: #9aa8bd; border-color: var(--line-soft); }
+        .shop-desc {
+            white-space: pre-wrap;
+            word-break: break-word;
+            background: #fbfcfe;
+            border: 1px solid var(--line-soft);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 12.5px;
+            margin-top: 10px;
+        }
+        .shop-raw { margin-top: 10px; }
+        .shop-raw .table-wrap { max-height: 50vh; }
+    </style>
+}
+
+<section class="card">
+    <div class="page-head">
+        <h2>Shop Explorer <span class="muted small">(@Model.Total.ToString("N0") item khớp bộ lọc)</span></h2>
+        <span class="badge-ok"><i class="fa fa-lock"></i> Chỉ đọc (SELECT)</span>
+    </div>
+    <p class="muted small">
+        Nguồn: <code>Db_Tank_All.dbo.Shop_Goods</code> · thể loại: <code>Db_Gm.dbo.Category</code>
+        (fallback <code>Shop_Goods_Categorys</code>) · ảnh: <code>Vng:ItemImageBase</code>.
+    </p>
+
+    <form method="get" action="/Shop" class="shop-filters">
+        <div class="shop-filter-field">
+            <label for="shop-q">Tìm kiếm</label>
+            <input id="shop-q" name="q" value="@Model.Q" placeholder="Tên / ghi chú / TemplateID..." autocomplete="off" />
+        </div>
+        <div class="shop-filter-field">
+            <label for="shop-cat">Thể loại (Category)</label>
+            <select id="shop-cat" name="cat">
+                <option value="" selected="@(Model.Cat == null)">Tất cả thể loại</option>
+                @foreach (var category in Model.Categories)
+                {
+                    <option value="@category.Id" selected="@(Model.Cat == category.Id)">@category.Name (@category.Count)</option>
+                }
+            </select>
+        </div>
+        <div class="shop-filter-field">
+            <label for="shop-quality">Phẩm chất (Quality)</label>
+            <select id="shop-quality" name="quality">
+                <option value="" selected="@(Model.Quality == null)">Tất cả</option>
+                @foreach (var quality in Model.Qualities)
+                {
+                    <option value="@quality.Quality" selected="@(Model.Quality == quality.Quality)">Quality @quality.Quality (@quality.Count)</option>
+                }
+            </select>
+        </div>
+        <div class="shop-filter-field">
+            <label for="shop-sort">Sắp xếp</label>
+            <select id="shop-sort" name="sort">
+                <option value="tid" selected="@(Model.Sort == "tid")">TemplateID tăng dần</option>
+                <option value="name" selected="@(Model.Sort == "name")">Tên A → Z</option>
+                <option value="level" selected="@(Model.Sort == "level")">Level cao → thấp</option>
+                <option value="quality" selected="@(Model.Sort == "quality")">Quality cao → thấp</option>
+                <option value="cat" selected="@(Model.Sort == "cat")">Theo thể loại</option>
+            </select>
+        </div>
+        <div class="shop-filter-actions">
+            <button type="submit" class="btn primary"><i class="fa fa-search"></i> Tìm / Lọc</button>
+            @if (hasFilter)
+            {
+                <a class="btn" href="/Shop"><i class="fa fa-times"></i> Xoá lọc</a>
+            }
+            <span class="muted small" style="align-self:center;">Trang @Model.PageIndex / @Model.Pager.TotalPages · @GunnyPanel.Pages.ShopModel.PageSize item/trang</span>
+        </div>
+    </form>
+
+    @if (!string.IsNullOrEmpty(Model.Error))
+    {
+        <div class="alert danger">@Model.Error</div>
+    }
+</section>
+
+@if (Model.Detail != null)
+{
+    var d = Model.Detail!;
+    var overviewFields = new (string Label, string Value)[]
+    {
+        ("TemplateID", d.TemplateId.ToString()),
+        ("Tên vật phẩm", d.Name),
+        ("Thể loại", d.CategoryName + " (CategoryID " + d.CategoryId + ")"),
+        ("Level", d.Level.ToString()),
+        ("Quality (phẩm chất)", d.Quality.ToString()),
+        ("MaxCount (SL tối đa/ô)", d.MaxCount.ToString()),
+        ("NeedLevel (level yêu cầu)", d.NeedLevel.ToString()),
+        ("NeedSex (giới tính)", d.NeedSexText),
+        ("Valid (hạn dùng)", d.Valid.ToString()),
+        ("Count", d.Count.ToString()),
+        ("AddTime (ngày tạo)", d.AddTime)
+    };
+    var combatFields = new (string Label, string Value)[]
+    {
+        ("Attack (công)", d.Attack.ToString()),
+        ("Defence (thủ)", d.Defence.ToString()),
+        ("Agility (nhanh nhẹn)", d.Agility.ToString()),
+        ("Luck (may mắn)", d.Luck.ToString()),
+        ("Colors (màu)", d.Colors),
+        ("Hole (lỗ khảm)", d.Hole),
+        ("SuitId (bộ trang phục)", d.SuitId.ToString()),
+        ("RefineryLevel (luyện hoá)", d.RefineryLevel.ToString())
+    };
+    var economyFields = new (string Label, string Value)[]
+    {
+        ("FloorPrice (giá sàn)", d.FloorPrice.ToString()),
+        ("ReclaimValue (giá thu hồi)", d.ReclaimValue.ToString()),
+        ("ReclaimType (kiểu thu hồi)", d.ReclaimType.ToString()),
+        ("BindType (kiểu khoá)", d.BindType.ToString()),
+        ("FusionType", d.FusionType.ToString()),
+        ("FusionRate", d.FusionRate.ToString()),
+        ("FusionNeedRate", d.FusionNeedRate.ToString())
+    };
+
+    <section class="card shop-detail">
+        <div class="page-head">
+            <h2>Chi tiết vật phẩm <span class="mono muted small">#@d.TemplateId</span></h2>
+            <div class="shop-detail-actions">
+                <button type="button" class="btn small" data-copy="@d.TemplateId" title="Copy TemplateID vào clipboard">
+                    <i class="fa fa-file"></i> Copy TemplateID
+                </button>
+                <a class="btn small" href="@Model.CloseDetailUrl"><i class="fa fa-times"></i> Đóng chi tiết</a>
+            </div>
+        </div>
+
+        <div class="shop-detail-head">
+            <div class="item-thumb shop-detail-thumb">
+                <span class="shop-thumb-fallback">@(string.IsNullOrEmpty(d.ImageUrl) ? "Không có ảnh" : "Ảnh lỗi")</span>
+                @if (!string.IsNullOrEmpty(d.ImageUrl))
+                {
+                    <img src="@d.ImageUrl" alt="@d.Name" onerror="this.remove()" />
+                }
+            </div>
+            <div class="shop-detail-main">
+                <div class="shop-detail-name">@(string.IsNullOrWhiteSpace(d.Name) ? "(không tên)" : d.Name)</div>
+                <div class="shop-detail-meta">
+                    <span class="shop-detail-pill">@d.CategoryName</span>
+                    <span class="shop-detail-pill">Quality @d.Quality</span>
+                    <span class="shop-detail-pill">Level @d.Level</span>
+                    <span class="mono small">TemplateID @d.TemplateId</span>
+                </div>
+                <div class="shop-tags">
+                    @if (d.SupportsGold)
+                    {
+                        <span class="shop-tag shop-tag-gold">Đúc vàng</span>
+                    }
+                    @if (d.SupportsStats)
+                    {
+                        <span class="shop-tag shop-tag-stats">4 chỉ số</span>
+                    }
+                    @if (d.SupportsStrength)
+                    {
+                        <span class="shop-tag shop-tag-strength">Cấp độ</span>
+                    }
+                    <button type="button" class="btn small" data-toggle="shop-raw" style="margin-left:auto;">
+                        <i class="fa fa-search"></i> Mở rộng tất cả trường
+                    </button>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(d.Remark))
+                {
+                    <p class="muted small" style="margin:8px 0 0;"><b>Ghi chú:</b> @d.Remark</p>
+                }
+                @if (!string.IsNullOrWhiteSpace(d.Description))
+                {
+                    <div class="shop-desc"><b>Mô tả:</b> @d.Description</div>
+                }
+            </div>
+        </div>
+
+        <div class="shop-section-title">Thông tin chung</div>
+        <div class="shop-kv">
+            @foreach (var field in overviewFields)
+            {
+                <div class="shop-kv-row">
+                    <span class="shop-kv-label">@field.Label</span>
+                    <span class="shop-kv-value">@(string.IsNullOrWhiteSpace(field.Value) ? "—" : field.Value)</span>
+                </div>
+            }
+        </div>
+
+        <div class="shop-section-title">Chỉ số &amp; trang bị</div>
+        <div class="shop-kv">
+            @foreach (var field in combatFields)
+            {
+                <div class="shop-kv-row">
+                    <span class="shop-kv-label">@field.Label</span>
+                    <span class="shop-kv-value">@(string.IsNullOrWhiteSpace(field.Value) ? "—" : field.Value)</span>
+                </div>
+            }
+        </div>
+
+        <div class="shop-section-title">Giá &amp; thu hồi</div>
+        <div class="shop-kv">
+            @foreach (var field in economyFields)
+            {
+                <div class="shop-kv-row">
+                    <span class="shop-kv-label">@field.Label</span>
+                    <span class="shop-kv-value">@(string.IsNullOrWhiteSpace(field.Value) ? "—" : field.Value)</span>
+                </div>
+            }
+        </div>
+
+        <div class="shop-section-title">Cờ Can*</div>
+        <div class="shop-flags">
+            @foreach (var flag in d.Flags)
+            {
+                <span class="shop-flag @(flag.On ? "shop-flag-on" : "shop-flag-off")">@flag.Label: @(flag.On ? "Bật" : "Tắt")</span>
+            }
+        </div>
+
+        <div class="shop-raw" id="shop-raw" hidden>
+            <div class="table-wrap">
+                <table class="list compact">
+                    <thead>
+                    <tr><th>Cột</th><th>Giá trị</th></tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var field in d.RawFields)
+                    {
+                        <tr>
+                            <td class="mono">@field.Column</td>
+                            <td class="mono small">@(string.IsNullOrWhiteSpace(field.Value) ? "—" : field.Value)</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+}
+else if (!string.IsNullOrEmpty(Model.DetailError))
+{
+    <div class="alert info">@Model.DetailError</div>
+}
+
+<section class="card">
+    <div class="shop-result-head">
+        <h2 style="margin:0;">Kết quả <span class="muted small">(@Model.Total.ToString("N0") item)</span></h2>
+        <span class="muted small">
+            @if (Model.Total > 0)
+            {
+                <text>Hiển thị @Model.ShownFrom–@Model.ShownTo / @Model.Total.ToString("N0") item</text>
+            }
+            else
+            {
+                <text>Không có item</text>
+            }
+        </span>
+    </div>
+
+    @if (Model.Items.Count == 0 && string.IsNullOrEmpty(Model.Error))
+    {
+        <div class="alert info" style="margin-bottom:0;">
+            Không tìm thấy vật phẩm phù hợp. Thử từ khoá khác, bỏ lọc thể loại/phẩm chất hoặc
+            <a href="/Shop">xem toàn bộ Shop_Goods</a>.
+        </div>
+    }
+    else if (Model.Items.Count > 0)
+    {
+        <div class="shop-grid">
+            @foreach (var item in Model.Items)
+            {
+                <article class="shop-item @(Model.Sel == item.TemplateId ? "shop-item-active" : "")">
+                    <a class="shop-item-main" href="@Model.DetailUrl(item.TemplateId)" title="Xem chi tiết: @(string.IsNullOrWhiteSpace(item.Name) ? "TemplateID " + item.TemplateId : item.Name)">
+                        <div class="item-thumb">
+                            <span class="shop-thumb-fallback">@(string.IsNullOrEmpty(item.ImageUrl) ? "Không có ảnh" : "Ảnh lỗi")</span>
+                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                            {
+                                <img src="@item.ImageUrl" alt="@(string.IsNullOrWhiteSpace(item.Name) ? "TemplateID " + item.TemplateId : item.Name)" loading="lazy" onerror="this.remove()" />
+                            }
+                        </div>
+                        <div class="shop-item-info">
+                            <span class="shop-item-name">@(string.IsNullOrWhiteSpace(item.Name) ? "(không tên)" : item.Name)</span>
+                            <span class="shop-item-meta mono">#@item.TemplateId</span>
+                            <span class="shop-item-cat">@item.CategoryName</span>
+                            <span class="shop-item-meta">Quality @item.Quality · Level @item.Level · SL tối đa @item.MaxCount</span>
+                            @if (item.SupportsGold || item.SupportsStats || item.SupportsStrength)
+                            {
+                                <span class="shop-tags">
+                                    @if (item.SupportsGold)
+                                    {
+                                        <span class="shop-tag shop-tag-gold">Đúc vàng</span>
+                                    }
+                                    @if (item.SupportsStats)
+                                    {
+                                        <span class="shop-tag shop-tag-stats">4 chỉ số</span>
+                                    }
+                                    @if (item.SupportsStrength)
+                                    {
+                                        <span class="shop-tag shop-tag-strength">Cấp độ</span>
+                                    }
+                                </span>
+                            }
+                        </div>
+                    </a>
+                    <div class="shop-item-actions">
+                        <a class="btn small" href="@Model.DetailUrl(item.TemplateId)">Chi tiết</a>
+                        <button type="button" class="btn small" data-copy="@item.TemplateId" title="Copy TemplateID @item.TemplateId">📋</button>
+                    </div>
+                </article>
+            }
+        </div>
+        <partial name="_Pager" model="Model.Pager" />
+    }
+</section>
+
+@section Scripts {
+    <script>
+        (function () {
+            function fallbackCopy(text) {
+                var ta = document.createElement('textarea');
+                ta.value = text;
+                ta.setAttribute('readonly', '');
+                ta.style.position = 'fixed';
+                ta.style.top = '-1000px';
+                ta.style.left = '-1000px';
+                document.body.appendChild(ta);
+                ta.select();
+                ta.setSelectionRange(0, ta.value.length);
+                var ok = false;
+                try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+                document.body.removeChild(ta);
+                return ok;
+            }
+
+            function copyText(text) {
+                return new Promise(function (resolve, reject) {
+                    if (navigator.clipboard && window.isSecureContext) {
+                        navigator.clipboard.writeText(text).then(resolve).catch(function () {
+                            fallbackCopy(text) ? resolve() : reject(new Error('copy-failed'));
+                        });
+                    } else {
+                        fallbackCopy(text) ? resolve() : reject(new Error('copy-failed'));
+                    }
+                });
+            }
+
+            document.addEventListener('click', function (ev) {
+                var target = ev.target;
+                var copyBtn = target && target.closest ? target.closest('[data-copy]') : null;
+                if (copyBtn) {
+                    ev.preventDefault();
+                    var text = copyBtn.getAttribute('data-copy') || '';
+                    copyText(text).then(function () {
+                        if (window.gpToast) window.gpToast('Đã copy TemplateID ' + text, false);
+                    }).catch(function () {
+                        if (window.gpToast) window.gpToast('Không copy được — TemplateID: ' + text, true);
+                    });
+                    return;
+                }
+
+                var toggleBtn = target && target.closest ? target.closest('[data-toggle]') : null;
+                if (toggleBtn) {
+                    var box = document.getElementById(toggleBtn.getAttribute('data-toggle'));
+                    if (!box) return;
+                    var opening = box.hasAttribute('hidden');
+                    if (opening) box.removeAttribute('hidden'); else box.setAttribute('hidden', '');
+                    toggleBtn.innerHTML = opening
+                        ? '<i class="fa fa-search"></i> Thu gọn trường kỹ thuật'
+                        : '<i class="fa fa-search"></i> Mở rộng tất cả trường';
+                }
+            });
+        })();
+    </script>
+}

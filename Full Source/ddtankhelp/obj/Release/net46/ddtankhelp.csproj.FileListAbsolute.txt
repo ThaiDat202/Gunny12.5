@@ -1,0 +1,7 @@
+C:\Gunny\Gunny12.5\Full Source\ddtankhelp\bin\Release\net46\DDtankHelp.dll
+C:\Gunny\Gunny12.5\Full Source\ddtankhelp\bin\Release\net46\DDtankHelp.pdb
+C:\Gunny\Gunny12.5\Full Source\ddtankhelp\obj\Release\net46\ddtankhelp.csproj.AssemblyReference.cache
+C:\Gunny\Gunny12.5\Full Source\ddtankhelp\obj\Release\net46\ddtankhelp.GeneratedMSBuildEditorConfig.editorconfig
+C:\Gunny\Gunny12.5\Full Source\ddtankhelp\obj\Release\net46\ddtankhelp.csproj.CoreCompileInputs.cache
+C:\Gunny\Gunny12.5\Full Source\ddtankhelp\obj\Release\net46\DDtankHelp.dll
+C:\Gunny\Gunny12.5\Full Source\ddtankhelp\obj\Release\net46\DDtankHelp.pdb

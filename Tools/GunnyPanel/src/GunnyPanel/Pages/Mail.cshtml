@@ -1,0 +1,408 @@
+@page "/Mail"
+@model GunnyPanel.Pages.MailModel
+@{
+    ViewData["Title"] = "Hộp thư";
+    ViewData["Subtitle"] = "Xem hộp thư người chơi (User_Messages) — chỉ đọc, không xoá/sửa";
+    var fromRow = Model.Total == 0 ? 0 : (Model.PageIndex - 1) * GunnyPanel.Pages.MailModel.PageSize + 1;
+    var toRow = Math.Min(Model.Total, Model.PageIndex * GunnyPanel.Pages.MailModel.PageSize);
+}
+
+<style>
+    .mail-filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px 16px; align-items: end; margin-top: 6px; }
+    .mail-filters label { margin: 0 0 6px; }
+    .mail-filters input[type=date] { width: 100%; }
+    .mail-filter-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 2px; }
+    .mail-filter-actions .btn { margin-top: 0; }
+    .mail-check { display: flex; align-items: center; gap: 8px; margin: 0; padding: 10px 0; text-transform: none; letter-spacing: 0; font-size: 12.5px; font-weight: 600; color: var(--text); cursor: pointer; }
+    .mail-check input { width: 16px; height: 16px; }
+    .mail-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 12px; margin: 12px 0 4px; }
+    .mail-stat { border: 1px solid var(--line); border-radius: 12px; padding: 11px 14px; background: linear-gradient(180deg, #fff, #f8fafd); min-width: 0; }
+    .mail-stat span { display: block; color: var(--muted); font-size: 10.5px; font-weight: 650; text-transform: uppercase; letter-spacing: .4px; }
+    .mail-stat b { display: block; margin-top: 2px; font-size: 19px; color: var(--navy); font-family: Consolas, Consolas, monospace; overflow-wrap: anywhere; }
+    .mail-stat.unread b { color: var(--red); }
+    .mail-stat.money b { color: #a06b22; }
+    .mail-type { display: inline-block; white-space: nowrap; border-radius: 999px; padding: 2px 9px; font-size: 10.5px; font-weight: 650; border: 1px solid transparent; }
+    .mail-type-gm { background: #fcf3e3; color: #8a5a19; border-color: #ecd7b6; }
+    .mail-type-vip { background: #eaf6ef; color: #2f7d5c; border-color: #c9e6d6; }
+    .mail-type-system { background: #eaf2fb; color: #35628f; border-color: #cfe0f2; }
+    .mail-type-other { background: #f3f5f9; color: #5f6f8a; border-color: #e2e7f0; }
+    .mail-flag { display: inline-block; margin: 1px 3px 1px 0; border-radius: 999px; padding: 1px 8px; font-size: 10px; font-weight: 650; border: 1px solid transparent; white-space: nowrap; }
+    .mail-flag.read { background: #eef7f2; color: #2f8f6b; border-color: #cfe9dc; }
+    .mail-flag.unread { background: #fdf3e3; color: #a06b22; border-color: #ecd7b6; }
+    .mail-flag.warn { background: #fdeef1; color: #b8495b; border-color: #f1ccd3; }
+    .mail-flag.muted { background: #f3f5f9; color: #6b7a94; border-color: #e2e7f0; }
+    .mail-typelist { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .mail-type-pill { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; font-size: 11.5px; background: #fff; color: var(--text); }
+    .mail-type-pill b { font-size: 12px; color: var(--navy); }
+    .mail-type-pill em { font-style: normal; color: var(--red); font-size: 10.5px; }
+    .mail-preview { max-width: 340px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mail-content { white-space: pre-wrap; word-break: break-word; background: #fbfcfe; border: 1px solid var(--line-soft); border-radius: 10px; padding: 12px 14px; line-height: 1.6; font-size: 13px; max-height: 340px; overflow: auto; }
+    .mail-annex-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin-top: 10px; }
+    .mail-annex { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 10px; background: #fdfcf8; min-width: 0; }
+    .mail-annex-info { min-width: 0; display: flex; flex-direction: column; line-height: 1.35; }
+    .mail-annex-info b { color: var(--navy); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mail-annex-info em { font-style: normal; color: var(--muted); font-size: 11px; }
+    .mail-detail-title { margin: 2px 0 12px; font-size: 16px; color: var(--navy); overflow-wrap: anywhere; }
+    .mail-detail h3 { font-size: 13px; color: var(--navy); margin: 18px 0 8px; }
+    .mail-detail h3::before { content: ""; display: inline-block; width: 4px; height: 13px; border-radius: 3px; background: #cf9650; margin-right: 8px; vertical-align: -1px; }
+    @@media (max-width: 760px) { .mail-filters { grid-template-columns: 1fr; } }
+</style>
+
+<section class="card">
+    <div class="page-head">
+        <h2>Hộp thư <span class="muted small">(@Model.Total)</span></h2>
+        <span class="badge-ok"><i class="fa fa-lock"></i> Chỉ đọc (SELECT)</span>
+    </div>
+    <p class="muted small">
+        Nguồn: <code>Db_Tank.dbo.User_Messages</code> · tra tên/ảnh vật phẩm đính kèm qua
+        <code>Db_Tank_All.dbo.Shop_Goods</code> · tìm theo người nhận, tiêu đề/nội dung, loại thư, trạng thái đọc và khoảng thời gian.
+    </p>
+    <div class="alert info">
+        🔒 Trang <b>chỉ đọc</b> — không có chức năng xoá/sửa mail. Muốn xoá mail test cần <b>duyệt riêng</b> (thao tác ghi DB),
+        xem ghi chú trong <code>docs/WEB-MAIL-VIEWER.md</code>.
+    </div>
+
+    <form method="get" class="mail-filters">
+        <div>
+            <label for="mail-user">Người nhận (UserID / NickName)</label>
+            <input id="mail-user" name="user" value="@Model.UserFilter" placeholder="vd: 1 hoặc test1" autocomplete="off" />
+        </div>
+        <div>
+            <label for="mail-q">Từ khoá tiêu đề / nội dung</label>
+            <input id="mail-q" name="q" value="@Model.Q" placeholder="vd: GM, VIP, phần thưởng..." autocomplete="off" />
+        </div>
+        <div>
+            <label for="mail-type">Loại thư</label>
+            <select id="mail-type" name="type">
+                <option value="" selected="@(!Model.Type.HasValue)">Tất cả loại</option>
+                @foreach (var typeOption in Model.TypeOptions)
+                {
+                    <option value="@typeOption.Type" selected="@(Model.Type == typeOption.Type)">@typeOption.Label (@typeOption.Count)</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label for="mail-read">Trạng thái đọc</label>
+            <select id="mail-read" name="read">
+                <option value="" selected="@(!Model.Read.HasValue)">Tất cả</option>
+                <option value="0" selected="@(Model.Read == 0)">Chưa đọc</option>
+                <option value="1" selected="@(Model.Read == 1)">Đã đọc</option>
+            </select>
+        </div>
+        <div>
+            <label for="mail-from">Từ ngày (SendTime)</label>
+            <input id="mail-from" type="date" name="from" value="@Model.From" />
+        </div>
+        <div>
+            <label for="mail-to">Đến ngày</label>
+            <input id="mail-to" type="date" name="to" value="@Model.To" />
+        </div>
+        <div>
+            <label for="mail-sort">Sắp xếp</label>
+            <select id="mail-sort" name="sort">
+                <option value="time" selected="@(Model.Sort == "time")">Thời gian mới nhất</option>
+                <option value="id" selected="@(Model.Sort == "id")">ID mới nhất</option>
+                <option value="old" selected="@(Model.Sort == "old")">Cũ nhất trước</option>
+            </select>
+        </div>
+        <div>
+            <label class="mail-check" for="mail-del">
+                <input id="mail-del" type="checkbox" name="del" value="1" checked="@Model.IncludeDeleted" />
+                Gồm thư đã xoá (IsDelete=1)
+            </label>
+        </div>
+        <div class="mail-filter-actions">
+            <button type="submit" class="btn primary"><i class="fa fa-search"></i> Tìm / Lọc</button>
+            @if (Model.HasFilter)
+            {
+                <a class="btn" href="/Mail">Xoá lọc</a>
+            }
+        </div>
+    </form>
+
+    @if (!string.IsNullOrEmpty(Model.Error))
+    {
+        <div class="alert danger">@Model.Error</div>
+    }
+</section>
+
+@if (!string.IsNullOrEmpty(Model.DetailError))
+{
+    <section class="card">
+        <div class="alert danger">@Model.DetailError</div>
+        <a class="btn" href="@Model.CloseDetailUrl()">‹ Về danh sách</a>
+    </section>
+}
+else if (Model.Detail != null)
+{
+    var mail = Model.Detail;
+    <section class="card mail-detail">
+        <div class="page-head">
+            <h2>Chi tiết thư #@mail.ID</h2>
+            <div class="row gap" style="margin-top:0;">
+                <span class="mail-type @GunnyPanel.Pages.MailModel.TypeBadgeClass(mail.Type)">@GunnyPanel.Pages.MailModel.TypeLabel(mail.Type)</span>
+                <a class="btn small" href="@Model.CloseDetailUrl()">✕ Đóng chi tiết</a>
+            </div>
+        </div>
+        <div class="mail-detail-title">📧 @(string.IsNullOrWhiteSpace(mail.Title) ? "(không có tiêu đề)" : mail.Title)</div>
+
+        <div class="grid two" style="margin-bottom:0;">
+            <div>
+                <h3>Thông tin thư</h3>
+                <table class="mini">
+                    <tr><td><b>ID</b></td><td class="mono">@mail.ID</td></tr>
+                    <tr>
+                        <td><b>Người gửi</b></td>
+                        <td>
+                            @if (mail.SenderID > 0)
+                            {
+                                <a href="/Users/Details?id=@mail.SenderID">@mail.SenderDisplay</a>
+                            }
+                            else
+                            {
+                                @mail.SenderDisplay
+                            }
+                            <span class="muted small">(SenderID @mail.SenderID)</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><b>Người nhận</b></td>
+                        <td>
+                            <a href="/Users/Details?id=@mail.ReceiverID">@mail.ReceiverDisplay</a>
+                            <span class="muted small">(UserID @mail.ReceiverID)</span>
+                        </td>
+                    </tr>
+                    <tr><td><b>Loại thư</b></td><td><span class="mail-type @GunnyPanel.Pages.MailModel.TypeBadgeClass(mail.Type)">@GunnyPanel.Pages.MailModel.TypeLabel(mail.Type)</span> <span class="muted small">(Type = @mail.Type)</span></td></tr>
+                    <tr><td><b>Thời gian gửi</b></td><td class="mono">@mail.SendTime</td></tr>
+                    <tr><td><b>SendDate</b></td><td class="mono">@mail.SendDate</td></tr>
+                    <tr><td><b>Hạn dùng (ValidDate)</b></td><td class="mono">@mail.ValidDate ngày</td></tr>
+                </table>
+            </div>
+            <div>
+                <h3>Trạng thái &amp; quà tặng</h3>
+                <table class="mini">
+                    <tr><td><b>Đã đọc</b></td><td class="@(mail.IsRead ? "ok" : "bad")">@(mail.IsRead ? "Có" : "Chưa đọc")</td></tr>
+                    <tr><td><b>Người nhận đã xoá (IsDelR)</b></td><td class="@(mail.IsDelR ? "bad" : "ok")">@(mail.IsDelR ? "Có" : "Không")</td></tr>
+                    <tr><td><b>Người gửi đã xoá (IfDelS)</b></td><td class="@(mail.IfDelS ? "bad" : "ok")">@(mail.IfDelS ? "Có" : "Không")</td></tr>
+                    <tr><td><b>Xoá hẳn (IsDelete)</b></td><td class="@(mail.IsDelete ? "bad" : "ok")">@(mail.IsDelete ? "Có" : "Không")</td></tr>
+                    <tr><td><b>Còn tồn tại (IsExist)</b></td><td class="@(mail.IsExist ? "ok" : "bad")">@(mail.IsExist ? "Có" : "Không")</td></tr>
+                    <tr><td><b>Gold</b></td><td class="mono">@mail.Gold.ToString("N0")</td></tr>
+                    <tr><td><b>Money (xu)</b></td><td class="mono">@mail.Money.ToString("N0")</td></tr>
+                    <tr><td><b>GiftToken (xu khoá)</b></td><td class="mono">@mail.GiftToken.ToString("N0")</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <h3>Nội dung đầy đủ</h3>
+        @if (string.IsNullOrWhiteSpace(mail.Content))
+        {
+            <p class="muted small">— (thư không có nội dung) —</p>
+        }
+        else
+        {
+            <div class="mail-content">@mail.Content</div>
+        }
+
+        <h3>Vật phẩm đính kèm (@Model.DetailAnnexes.Count)</h3>
+        @if (Model.DetailAnnexes.Count == 0)
+        {
+            <p class="muted small">Thư không có annex (Annex1..Annex5 trống).</p>
+        }
+        else
+        {
+            <div class="mail-annex-grid">
+                @foreach (var annex in Model.DetailAnnexes)
+                {
+                    <div class="mail-annex">
+                        <span class="item-thumb">
+                            <i class="fa">📦</i>
+                            @if (!string.IsNullOrWhiteSpace(annex.ImageUrl))
+                            {
+                                <img src="@annex.ImageUrl" alt="@annex.Name" loading="lazy" onerror="this.remove();" />
+                            }
+                        </span>
+                        <span class="mail-annex-info">
+                            <b>@annex.Name</b>
+                            @if (annex.HasShopName && !string.Equals(annex.ShopName, annex.Name, StringComparison.OrdinalIgnoreCase))
+                            {
+                                <em>Tên trong Shop_Goods: @annex.ShopName</em>
+                            }
+                            <em>
+                                Slot @annex.Slot · Annex = @(string.IsNullOrWhiteSpace(annex.Raw) ? "(trống)" : annex.Raw)
+                                @if (annex.TemplateId.HasValue)
+                                {
+                                    <text> · TemplateID @annex.TemplateId</text>
+                                }
+                                @if (annex.CategoryId > 0)
+                                {
+                                    <text> · Cat @annex.CategoryId@(string.IsNullOrWhiteSpace(annex.CategoryName) ? "" : " (" + annex.CategoryName + ")")</text>
+                                }
+                            </em>
+                            <em>@annex.SourceText</em>
+                        </span>
+                    </div>
+                }
+            </div>
+        }
+
+        <h3>Ghi chú dữ liệu (Remark / AnnexRemark)</h3>
+        <table class="mini">
+            <tr><td><b>Remark</b></td><td class="mono small">@(string.IsNullOrWhiteSpace(mail.Remark) ? "—" : mail.Remark)</td></tr>
+            <tr><td><b>AnnexRemark</b></td><td class="small">@(string.IsNullOrWhiteSpace(mail.AnnexRemark) ? "—" : mail.AnnexRemark)</td></tr>
+        </table>
+    </section>
+}
+
+<section class="card">
+    <div class="page-head">
+        <h2>Thống kê nhanh</h2>
+        <span class="muted small">Theo phạm vi lọc hiện tại@(Model.IncludeDeleted ? " · đang gồm thư đã xoá" : " · mặc định chỉ thư chưa xoá")</span>
+    </div>
+    <div class="mail-stats">
+        <div class="mail-stat"><span>Tổng số thư</span><b>@Model.Total</b></div>
+        <div class="mail-stat unread"><span>Chưa đọc</span><b>@Model.UnreadTotal</b></div>
+        <div class="mail-stat"><span>Đã xoá hẳn (IsDelete=1)</span><b>@Model.DeletedTotal</b></div>
+        <div class="mail-stat money"><span>Tổng Gold</span><b>@Model.SumGold.ToString("N0")</b></div>
+        <div class="mail-stat money"><span>Tổng Money</span><b>@Model.SumMoney.ToString("N0")</b></div>
+        <div class="mail-stat"><span>Tổng GiftToken</span><b>@Model.SumGiftToken.ToString("N0")</b></div>
+    </div>
+    @if (Model.TypeStats.Count > 0)
+    {
+        <div class="mail-typelist">
+            @foreach (var typeStat in Model.TypeStats)
+            {
+                <span class="mail-type-pill">
+                    <span class="mail-type @typeStat.BadgeClass">@typeStat.Label</span>
+                    <b>@typeStat.Count</b>
+                    @if (typeStat.Unread > 0)
+                    {
+                        <em>@typeStat.Unread chưa đọc</em>
+                    }
+                </span>
+            }
+        </div>
+        <p class="muted small" style="margin-top:10px;">
+            Phân bố loại thư theo dữ liệu thực tế: <b>51</b> = thư GM gửi vật phẩm/Award (panel),
+            <b>8</b> = quà VIP/Event, <b>83</b> = thư hệ thống/GM; giá trị khác hiển thị “Loại N”.
+        </p>
+    }
+</section>
+
+<section class="card">
+    <div class="page-head">
+        <h2>Danh sách thư</h2>
+        <span class="muted small">Mới nhất trước · dòng @fromRow–@toRow / @Model.Total</span>
+    </div>
+
+    @if (Model.Mails.Count == 0)
+    {
+        <p class="muted" style="margin-top:12px;">Không tìm thấy thư phù hợp với bộ lọc.</p>
+    }
+    else
+    {
+        <div class="table-wrap" style="margin-top:12px;">
+            <table class="list compact">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Người nhận</th>
+                    <th>Người gửi</th>
+                    <th>Tiêu đề / nội dung</th>
+                    <th>Loại</th>
+                    <th>Thời gian</th>
+                    <th>Đọc / xoá</th>
+                    <th>Gold / Money / GiftToken</th>
+                    <th>Annex</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var mail in Model.Mails)
+                {
+                    <tr>
+                        <td class="mono">@mail.ID</td>
+                        <td>
+                            <b>@mail.ReceiverDisplay</b>
+                            <div class="muted small">UserID @mail.ReceiverID</div>
+                        </td>
+                        <td>
+                            @mail.SenderDisplay
+                            <div class="muted small">ID @mail.SenderID</div>
+                        </td>
+                        <td>
+                            <a href="@Model.DetailUrl(mail.ID)">@(string.IsNullOrWhiteSpace(mail.Title) ? "(không tiêu đề)" : mail.Title)</a>
+                            @if (!string.IsNullOrWhiteSpace(mail.Content))
+                            {
+                                <div class="muted small mail-preview">
+                                    @(mail.Content.Length > 90 ? mail.Content.Substring(0, 90) + "…" : mail.Content)
+                                </div>
+                            }
+                        </td>
+                        <td><span class="mail-type @GunnyPanel.Pages.MailModel.TypeBadgeClass(mail.Type)">@GunnyPanel.Pages.MailModel.TypeLabel(mail.Type)</span></td>
+                        <td class="mono small">@mail.SendTime</td>
+                        <td>
+                            @if (mail.IsUnread)
+                            {
+                                <span class="mail-flag unread">Chưa đọc</span>
+                            }
+                            else
+                            {
+                                <span class="mail-flag read">Đã đọc</span>
+                            }
+                            @if (mail.IsDelete)
+                            {
+                                <span class="mail-flag warn">Đã xoá hẳn</span>
+                            }
+                            @if (mail.IsDelR)
+                            {
+                                <span class="mail-flag warn">Người nhận đã xoá</span>
+                            }
+                            @if (mail.IfDelS)
+                            {
+                                <span class="mail-flag warn">Người gửi đã xoá</span>
+                            }
+                            @if (!mail.IsExist)
+                            {
+                                <span class="mail-flag muted">Không tồn tại</span>
+                            }
+                        </td>
+                        <td class="mono small">
+                            @if (mail.Gold == 0 && mail.Money == 0 && mail.GiftToken == 0)
+                            {
+                                <span class="muted">—</span>
+                            }
+                            else
+                            {
+                                @if (mail.Gold != 0)
+                                {
+                                    <div>Gold @mail.Gold.ToString("N0")</div>
+                                }
+                                @if (mail.Money != 0)
+                                {
+                                    <div>Money @mail.Money.ToString("N0")</div>
+                                }
+                                @if (mail.GiftToken != 0)
+                                {
+                                    <div>GiftToken @mail.GiftToken.ToString("N0")</div>
+                                }
+                            }
+                        </td>
+                        <td class="mono small">
+                            @if (mail.AnnexCount > 0)
+                            {
+                                <span>📦 @mail.AnnexCount</span>
+                            }
+                            else
+                            {
+                                <span class="muted">—</span>
+                            }
+                        </td>
+                        <td><a class="btn small" href="@Model.DetailUrl(mail.ID)">Xem chi tiết</a></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <partial name="_Pager" model="Model.Pager" />
+    }
+</section>

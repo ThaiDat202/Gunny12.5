@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "dgSpecHash": "7r7kKmg6Cdo=",
+  "success": true,
+  "projectFilePath": "C:\\Gunny\\Gunny12.5\\Full Source\\Game.Logic\\game.logic.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\hotha\\.nuget\\packages\\entityframework\\6.0.0\\entityframework.6.0.0.nupkg.sha512",
+    "C:\\Users\\hotha\\.nuget\\packages\\log4net\\2.0.14\\log4net.2.0.14.nupkg.sha512",
+    "C:\\Users\\hotha\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
+    "C:\\Users\\hotha\\.nuget\\packages\\protobuf-net\\2.4.0\\protobuf-net.2.4.0.nupkg.sha512",
+    "C:\\Users\\hotha\\.nuget\\packages\\zlib.net\\1.0.4\\zlib.net.1.0.4.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "Package 'log4net' 2.0.14 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-4f7c-pmjv-c25w",
+      "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\Game.Logic\\game.logic.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Gunny\\Gunny12.5\\Full Source\\Game.Logic\\game.logic.csproj",
+      "libraryId": "log4net",
+      "targetGraphs": [
+        "net472"
+      ]
+    }
+  ]
+}

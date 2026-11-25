@@ -1,0 +1,36 @@
+<Result value="true" message="Success!">
+  <Item Type="1" Name="Tất cả thuộc tính" Desc="4 dòng cơ bản +{0}" Range="24_58|27_65|30_72|33_79|36_86" />
+  <Item Type="2" Name="Sát thương cuối" Desc="Sát thương cuối +{0}‰" Range="4_12|4_12|4_12|4_12|4_12" />
+  <Item Type="3" Name="Nhận kỹ năng" Desc="&lt;&lt;&gt;&gt;" Range="&lt;&lt;&gt;&gt;" />
+  <Item Type="4" Name="Tấn công" Desc="Tấn công +{0}" Range="80_192|90_216|100_240|110_264|120_288" />
+  <Item Type="5" Name="Phòng thủ" Desc="Phòng thủ +{0}" Range="80_192|90_216|100_240|110_264|120_288" />
+  <Item Type="6" Name="Nhanh Nhẹn" Desc="Nhanh Nhẹn +{0}" Range="80_192|90_216|100_240|110_264|120_288" />
+  <Item Type="7" Name="May Mắn" Desc="May Mắn +{0}" Range="80_192|90_216|100_240|110_264|120_288" />
+  <Item Type="8" Name="HP" Desc="HP +{0}" Range="640_1536|720_1728|800_1920|880_2112|960_2304" />
+  <Item Type="9" Name="Ma Kháng" Desc="Ma Kháng +{0}" Range="56_134|63_151|70_168|77_185|84_202" />
+  <Item Type="10" Name="Bạo kích " Desc="Bạo kích +{0}" Range="56_134|63_151|70_168|77_185|84_202" />
+  <Item Type="11" Name="Kháng bạo" Desc="Kháng bạo +{0}" Range="80_192|90_216|100_240|110_264|120_288" />
+  <Item Type="12" Name="Miễn sát thương" Desc="Miễn sát thương +{0}" Range="80_192|90_216|100_240|110_264|120_288" />
+  <Item Type="13" Name="POW" Desc="POW +{0}" Range="56_134|63_151|70_168|77_185|84_202" />
+  <Item Type="14" Name="Tất kháng" Desc="Tất kháng +{0}" Range="80_192|90_216|100_240|110_264|120_288" />
+  <Item Type="15" Name="Bạo thương" Desc="Bạo thương +{0}" Range="56_134|63_151|70_168|77_185|84_202" />
+  <Item Type="16" Name="Bảo vệ" Desc="Bảo vệ +{0}" Range="80_192|90_216|100_240|110_264|120_288" />
+  <Item Type="17" Name="Công Lửa" Desc="Công Lửa +{0}" Range="64_154|72_173|80_192|88_211|96_230" />
+  <Item Type="18" Name="Công Gió" Desc="Công Gió +{0}" Range="64_154|72_173|80_192|88_211|96_230" />
+  <Item Type="19" Name="Công Đất" Desc="Công Đất +{0}" Range="64_154|72_173|80_192|88_211|96_230" />
+  <Item Type="20" Name="Công Nước" Desc="Công Nước +{0}" Range="64_154|72_173|80_192|88_211|96_230" />
+  <Item Type="21" Name="Kháng Lửa" Desc="Kháng Lửa +{0}" Range="80_192|90_216|100_240|110_264|120_288" />
+  <Item Type="22" Name="Kháng Gió" Desc="Kháng Gió +{0}" Range="80_192|90_216|100_240|110_264|120_288" />
+  <Item Type="23" Name="Kháng Đất" Desc="Kháng Đất +{0}" Range="80_192|90_216|100_240|110_264|120_288" />
+  <Item Type="24" Name="Kháng Nước" Desc="Kháng Nước +{0}" Range="80_192|90_216|100_240|110_264|120_288" />
+  <Item Type="25" Name="Sát Thương" Desc="Sát thương +{0}" Range="16_38|18_43|20_48|22_53|24_58" />
+  <Item Type="26" Name="Hộ giáp" Desc="Hộ Giáp +{0}" Range="16_38|18_43|20_48|22_53|24_58" />
+  <Item Type="27" Name="Ma Công" Desc="Ma Công +{0}" Range="40_96|45_108|50_120|55_132|60_144" />
+  <Item Type="28" Name="Phá giáp" Desc="Phá giáp +{0}" Range="56_134|63_151|70_168|77_185|84_202" />
+  <Item Type="29" Name="Tốc độ" Desc="Tốc độ +{0}" Range="4_10|5_11|5_12|6_13|6_14" />
+  <Item Type="30" Name="Nhận kỹ năng" Desc="&lt;&lt;&gt;&gt;" Range="&lt;&lt;&gt;&gt;" />
+  <Item Type="31" Name="Công Sáng" Desc="Công Sáng+{0}" Range="64_154|72_173|80_192|88_211|96_230" />
+  <Item Type="32" Name="Công Tối" Desc="Công Tối+{0}" Range="64_154|72_173|80_192|88_211|96_230" />
+  <Item Type="33" Name="Kháng Sáng" Desc="Kháng Sáng+{0}" Range="80_192|90_216|100_240|110_264|120_288" />
+  <Item Type="34" Name="Kháng Tối" Desc="Kháng Tối+{0}" Range="80_192|90_216|100_240|110_264|120_288" />
+</Result>

@@ -1,0 +1,145 @@
+@page
+@model GunnyPanel.Pages.DbModel
+@{
+    ViewData["Title"] = "DB Query (SELECT only)";
+}
+
+<section class="card">
+    <form method="post">
+        <div class="grid two">
+            <div>
+                <label>Connection</label>
+                <select name="Connection">
+                    @foreach (var name in Model.Connections)
+                    {
+                        if (name == Model.Connection)
+                        {
+                            <option value="@name" selected>@name</option>
+                        }
+                        else
+                        {
+                            <option value="@name">@name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div>
+                <label>Bảng (chèn nhanh)</label>
+                <select id="tables">
+                    <option value="">-- chọn bảng --</option>
+                    @foreach (var table in Model.Tables)
+                    {
+                        <option value="@table">@table</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <label>SQL (chỉ SELECT / WITH, tối đa 300 dòng hiển thị)</label>
+        <textarea name="Sql" rows="5">@Model.Sql</textarea>
+        <div class="row gap">
+            <button type="submit" class="btn primary">Chạy</button>
+            @if (Model.Result != null && Model.Result.Ok)
+            {
+                <a class="btn" href="?handler=Export&connection=@Model.Connection&sql=@Uri.EscapeDataString(Model.Sql ?? "")">Xuất CSV</a>
+            }
+        </div>
+    </form>
+</section>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="alert @(Model.Result != null && !Model.Result.Ok ? "danger" : "info")">@Model.Message</div>
+}
+
+@if (Model.Result != null && Model.Result.Ok)
+{
+    <section class="card">
+        <div class="page-head">
+            <h2>Kết quả: @Model.Result.Rows.Count dòng @(Model.Result.Truncated ? "(đã cắt bớt)" : "")</h2>
+            <span class="muted small">Hiển thị tối đa 50 dòng/trang</span>
+        </div>
+        <div class="table-wrap">
+            <table class="list compact" id="db-table">
+                <thead>
+                <tr>
+                    @foreach (var col in Model.Result.Columns)
+                    {
+                        <th>@col</th>
+                    }
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var row in Model.Result.Rows)
+                {
+                    <tr>
+                        @foreach (var cell in row)
+                        {
+                            <td>@cell</td>
+                        }
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <nav class="pager" id="db-pager" style="display:none;"></nav>
+    </section>
+}
+
+@section Scripts {
+    <script>
+        document.getElementById('tables').addEventListener('change', function () {
+            if (!this.value) return;
+            var box = document.querySelector('textarea[name="Sql"]');
+            box.value = 'SELECT TOP 100 * FROM [dbo].[' + this.value + ']';
+        });
+
+        (function () {
+            var table = document.getElementById('db-table');
+            var pager = document.getElementById('db-pager');
+            if (!table || !pager) return;
+            var rows = Array.prototype.slice.call(table.querySelectorAll('tbody tr'));
+            var pageSize = 50;
+            if (rows.length <= pageSize) return;
+            var totalPages = Math.ceil(rows.length / pageSize);
+            var current = 1;
+
+            function show(page) {
+                current = page;
+                rows.forEach(function (row, index) {
+                    row.style.display = (Math.floor(index / pageSize) === page - 1) ? '' : 'none';
+                });
+                pager.innerHTML = '';
+                var prev = document.createElement('a');
+                prev.className = 'pg' + (current <= 1 ? ' disabled' : '');
+                prev.textContent = '‹ Trước';
+                prev.href = '#';
+                prev.onclick = function (e) { e.preventDefault(); if (current > 1) show(current - 1); };
+                pager.appendChild(prev);
+
+                for (var i = 1; i <= totalPages; i++) {
+                    var link = document.createElement('a');
+                    link.className = 'pg' + (i === current ? ' active' : '');
+                    link.textContent = i;
+                    link.href = '#';
+                    link.onclick = (function (p) { return function (e) { e.preventDefault(); show(p); }; })(i);
+                    pager.appendChild(link);
+                }
+
+                var next = document.createElement('a');
+                next.className = 'pg' + (current >= totalPages ? ' disabled' : '');
+                next.textContent = 'Sau ›';
+                next.href = '#';
+                next.onclick = function (e) { e.preventDefault(); if (current < totalPages) show(current + 1); };
+                pager.appendChild(next);
+
+                var info = document.createElement('span');
+                info.className = 'pg-info';
+                info.textContent = 'Trang ' + current + '/' + totalPages + ' · ' + rows.length + ' dòng';
+                pager.appendChild(info);
+            }
+
+            pager.style.display = '';
+            show(1);
+        })();
+    </script>
+}

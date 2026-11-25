@@ -1,0 +1,12 @@
+C:\Gunny\Gunny12.5\Tools\GunnyPanel\src\GunnySuite.Core\bin\Release\net10.0\GunnySuite.Core.deps.json
+C:\Gunny\Gunny12.5\Tools\GunnyPanel\src\GunnySuite.Core\bin\Release\net10.0\GunnySuite.Core.dll
+C:\Gunny\Gunny12.5\Tools\GunnyPanel\src\GunnySuite.Core\bin\Release\net10.0\GunnySuite.Core.pdb
+C:\Gunny\Gunny12.5\Tools\GunnyPanel\src\GunnySuite.Core\obj\Release\net10.0\GunnySuite.Core.csproj.AssemblyReference.cache
+C:\Gunny\Gunny12.5\Tools\GunnyPanel\src\GunnySuite.Core\obj\Release\net10.0\GunnySuite.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Gunny\Gunny12.5\Tools\GunnyPanel\src\GunnySuite.Core\obj\Release\net10.0\GunnySuite.Core.AssemblyInfoInputs.cache
+C:\Gunny\Gunny12.5\Tools\GunnyPanel\src\GunnySuite.Core\obj\Release\net10.0\GunnySuite.Core.AssemblyInfo.cs
+C:\Gunny\Gunny12.5\Tools\GunnyPanel\src\GunnySuite.Core\obj\Release\net10.0\GunnySuite.Core.csproj.CoreCompileInputs.cache
+C:\Gunny\Gunny12.5\Tools\GunnyPanel\src\GunnySuite.Core\obj\Release\net10.0\GunnySuite.Core.dll
+C:\Gunny\Gunny12.5\Tools\GunnyPanel\src\GunnySuite.Core\obj\Release\net10.0\refint\GunnySuite.Core.dll
+C:\Gunny\Gunny12.5\Tools\GunnyPanel\src\GunnySuite.Core\obj\Release\net10.0\GunnySuite.Core.pdb
+C:\Gunny\Gunny12.5\Tools\GunnyPanel\src\GunnySuite.Core\obj\Release\net10.0\ref\GunnySuite.Core.dll

@@ -1,0 +1,2 @@
+{"Time":"2026-11-23T03:00:00.0179847+07:00","User":"scheduler","Action":"job.enqueue","Detail":"sync-xml 10ab2517-4958-4e54-ab03-9ef064ca14ca (daily 03:00)"}
+{"Time":"2026-11-23T03:00:15.6510664+07:00","User":"scheduler","Action":"job.sync-xml","Detail":"Success | Sync XML VNG (scheduler) | OK=258, packed=21, missing=45, failed=0 | C:\\Gunny\\Gunny12.5\\Website\\Request\\vng-quest"}

@@ -1,0 +1,6 @@
+2026-11-22 15:03:58,993 - [7] - ERROR - Game.Base.Packets.StreamProcessor - HandlePacket(pak)::
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Fighting.Server.GameObjects.ProxyPlayerInfo.GetItemTemplateInfo()
+   at Fighting.Server.GameObjects.ProxyPlayer..ctor(ServerClient client, PlayerInfo character, UserMatchInfo matchInfo, ProxyPlayerInfo proxyPlayer, UsersPetInfo pet, List`1 infos, List`1 euipEffects, List`1 horseAmuletEffects, List`1 fightBuffs, List`1 horseSkill, BatleConfigInfo batleConfig, List`1 petSealSkillEquip)
+   at Fighting.Server.ServerClient.HandleGameRoomCreate(GSPacketIn pkg)
+   at Game.Base.Packets.StreamProcessor.ReceiveBytes(Int32 numBytes)

@@ -1,0 +1,6 @@
+{"Time":"2026-11-22T14:09:27.61007+07:00","User":"scheduler","Action":"job.enqueue","Detail":"sync-xml 7cd0814b-af58-4fa1-bda3-00841e318d39 (daily 03:00)"}
+{"Time":"2026-11-22T14:09:44.1613253+07:00","User":"scheduler","Action":"job.sync-xml","Detail":"Success | Sync XML VNG (scheduler) | OK=258, packed=21, missing=45, failed=0 | C:\\Gunny\\Gunny12.5\\Website\\Request\\vng-quest"}
+{"Time":"2026-11-22T15:01:50.7135376+07:00","User":"gm","Action":"login.ok","Detail":"127.0.0.1"}
+{"Time":"2026-11-22T16:25:18.0564842+07:00","User":"gm","Action":"user.award","Detail":"id=2 nick=test2 templateId=95684 count=2 bind=False validDays=0 attack=50 defend=50 agility=50 luck=50 strengthLevel=0 goldDays=0 mailNotified=True title=Ph\u1EA7n th\u01B0\u1EDFng GM"}
+{"Time":"2026-11-22T16:25:37.7886677+07:00","User":"gm","Action":"user.award","Detail":"id=2 nick=test2 templateId=95304 count=2 bind=False validDays=0 attack=50 defend=50 agility=50 luck=50 strengthLevel=0 goldDays=0 mailNotified=True title=Ph\u1EA7n th\u01B0\u1EDFng GM"}
+{"Time":"2026-11-22T21:18:59.0905706+07:00","User":"admin","Action":"login.ok","Detail":"127.0.0.1"}

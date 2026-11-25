@@ -1,0 +1,131 @@
+@page
+@model GunnyPanel.Pages.XmlModel
+@{
+    ViewData["Title"] = "XML Explorer";
+    ViewData["Subtitle"] = "Xem nhanh bộ XML đã sync từ quest VNG (giải nén zlib, xem trước dữ liệu)";
+    var baseName = Model.Selected == null ? "" : System.IO.Path.GetFileNameWithoutExtension(Model.Selected);
+    var filePager = new GunnyPanel.Pages.Shared.Pager
+    {
+        Page = Model.FilePage,
+        PageSize = GunnyPanel.Pages.XmlModel.FilePageSize,
+        Total = Model.FileTotal,
+        Path = "/Xml",
+        PageParam = "fpage",
+        Query = new Dictionary<string, string?> { ["file"] = Model.SelectedFile }
+    };
+    var rowPager = new GunnyPanel.Pages.Shared.Pager
+    {
+        Page = Model.RowsPage,
+        PageSize = GunnyPanel.Pages.XmlModel.RowPageSize,
+        Total = Model.ChildCount,
+        Path = "/Xml",
+        PageParam = "rpage",
+        Query = new Dictionary<string, string?> { ["file"] = Model.Selected }
+    };
+}
+
+@if (!string.IsNullOrEmpty(Model.Error))
+{
+    <div class="alert danger">@Model.Error</div>
+}
+@if (!string.IsNullOrEmpty(Model.PackError))
+{
+    <div class="alert danger">@Model.PackError</div>
+}
+
+<div class="xml-layout">
+    <section class="card" style="margin-bottom:0;">
+        <div class="page-head">
+            <h2>File XML <span class="muted small">(@Model.FileTotal)</span></h2>
+        </div>
+        <div class="xml-files">
+            @if (Model.PageFiles.Count == 0)
+            {
+                <p style="padding:12px;" class="muted small">Chưa có file. Vào Jobs → Sync XML để tải bộ XML VNG.</p>
+            }
+            else
+            {
+                @foreach (var file in Model.PageFiles)
+                {
+                    <a href="/Xml?file=@Uri.EscapeDataString(file.Name)" class="@(file.Name == Model.Selected ? "active" : null)">
+                        <span>@System.IO.Path.GetFileNameWithoutExtension(file.Name)</span>
+                        <span class="sz">@((file.Size / 1024.0).ToString("0.0")) KB</span>
+                    </a>
+                }
+            }
+        </div>
+        <partial name="_Pager" model="filePager" />
+    </section>
+
+    <section class="card" style="margin-bottom:0;">
+        @if (string.IsNullOrEmpty(Model.Selected))
+        {
+            <h2>Xem trước XML</h2>
+            <p class="muted">Chọn một file ở cột bên trái để xem nội dung.</p>
+        }
+        else
+        {
+            <h2>@System.IO.Path.GetFileNameWithoutExtension(Model.Selected)</h2>
+            <div class="row gap" style="margin-top:0;">
+                <a class="btn small" href="?handler=Download&file=@Uri.EscapeDataString(Model.Selected)"><i class="fa fa-download"></i> Tải XML đã giải nén</a>
+                <a class="btn small" href="?handler=PackDownload&file=@Uri.EscapeDataString(Model.Selected)"><i class="fa fa-download"></i> Tải bản nén zlib (ToolRip)</a>
+                <a class="btn small primary" href="/Jobs?ReqXml=@Uri.EscapeDataString(baseName)"><i class="fa fa-bolt"></i> Import → SQL (dry-run)</a>
+            </div>
+
+            <table class="mini" style="margin-top:16px;">
+                <tr>
+                    <td><b>Root</b></td>
+                    <td class="mono">@Model.RootName</td>
+                    <td><b>Số bản ghi</b></td>
+                    <td class="mono">@Model.ChildCount</td>
+                </tr>
+                <tr>
+                    <td><b>Kích thước</b></td>
+                    <td class="mono">
+                        @((Model.RawSize / 1024.0).ToString("0.0")) KB
+                        @if (Model.Decompressed)
+                        {
+                            <span class="muted">(zlib → @((Model.PlainSize / 1024.0).ToString("0.0")) KB)</span>
+                        }
+                    </td>
+                    <td><b>Số cột</b></td>
+                    <td class="mono">@Model.Columns.Count</td>
+                </tr>
+            </table>
+
+            @if (Model.Columns.Count > 0)
+            {
+                <div class="table-wrap" style="margin-top:14px;">
+                    <table class="list compact">
+                        <thead>
+                        <tr>@foreach (var col in Model.Columns) { <th>@col</th> }</tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var row in Model.Rows)
+                        {
+                            <tr>@foreach (var cell in row) { <td>@cell</td> }</tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                <partial name="_Pager" model="rowPager" />
+            }
+            else
+            {
+                <p class="muted" style="margin-top:14px;">XML không có phần tử con / thuộc tính để xem trước.</p>
+            }
+        }
+    </section>
+</div>
+
+<section class="card">
+    <h2>Nén XML → zlib (tương thích ToolRip CreateCompressXml)</h2>
+    <p class="muted small">Upload file XML (plain hoặc đã nén zlib) → panel nén zlib và tải về file <code>.xml</code> để đưa lên request server / dùng cho ToolRip.</p>
+    <form method="post" enctype="multipart/form-data" asp-page-handler="Pack">
+        <div class="upload-box">
+            <label>File XML cần nén</label>
+            <input type="file" name="PackUpload" accept=".xml" />
+        </div>
+        <button type="submit" class="btn primary"><i class="fa fa-download"></i> Nén zlib &amp; tải về</button>
+    </form>
+</section>

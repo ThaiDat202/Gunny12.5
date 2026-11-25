@@ -1,0 +1,276 @@
+﻿{
+    "time":  "2026-11-07T20:17:12",
+    "userId":  1,
+    "featuresTested":  33,
+    "failed":  0,
+    "snapshotBefore":  {
+                           "UserId":  1,
+                           "NickName":  "test1",
+                           "State":  1,
+                           "Grade":  70,
+                           "GP":  857997577,
+                           "Money":  2060306015,
+                           "Gold":  10001150,
+                           "DdtKingGrade":  10,
+                           "GuardCoreGrade":  20,
+                           "HonorLevel":  100,
+                           "SwornId":  9522,
+                           "ExplorerManualLevel":  1,
+                           "Attack":  16539,
+                           "Defence":  17202,
+                           "Agility":  16063,
+                           "Luck":  17526,
+                           "Hp":  472344,
+                           "MagicAttack":  9681,
+                           "MagicDefence":  15399,
+                           "FightPower":  57787747,
+                           "RankCount":  3,
+                           "AvatarCount":  111,
+                           "CardCount":  5,
+                           "EquipCount":  9,
+                           "MagicStoneCount":  0,
+                           "DrillHoles":  "0,0,0,0,0,0"
+                       },
+    "snapshotAfter":  {
+                          "UserId":  1,
+                          "NickName":  "test1",
+                          "State":  1,
+                          "Grade":  70,
+                          "GP":  857997577,
+                          "Money":  2060306015,
+                          "Gold":  10001150,
+                          "DdtKingGrade":  10,
+                          "GuardCoreGrade":  20,
+                          "HonorLevel":  100,
+                          "SwornId":  9522,
+                          "ExplorerManualLevel":  1,
+                          "Attack":  16539,
+                          "Defence":  17202,
+                          "Agility":  16074,
+                          "Luck":  17526,
+                          "Hp":  472344,
+                          "MagicAttack":  9681,
+                          "MagicDefence":  15399,
+                          "FightPower":  67769654,
+                          "RankCount":  6,
+                          "AvatarCount":  111,
+                          "CardCount":  5,
+                          "EquipCount":  9,
+                          "MagicStoneCount":  0,
+                          "DrillHoles":  "0,0,0,0,0,0"
+                      },
+    "results":  [
+                    {
+                        "feature":  "king",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã nâng level 70 + Cấp Vua Gà level 10 (live)."
+                    },
+                    {
+                        "feature":  "guard",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã nâng Bảo Vệ level 20 (live)."
+                    },
+                    {
+                        "feature":  "honor",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã nâng Vinh Dự level 100 và tính lại chỉ số (live)."
+                    },
+                    {
+                        "feature":  "sworn",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã nâng Nhẫn Cầu Hôn level 100 và tính lại chỉ số (live)."
+                    },
+                    {
+                        "feature":  "explorer",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã mở full Sổ Tay Thám Hiểm level 21 (live)."
+                    },
+                    {
+                        "feature":  "titles",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã thêm toàn bộ danh hiệu và đẩy danh sách mới cho client (live)."
+                    },
+                    {
+                        "feature":  "amulet_level",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã nâng Bùa Hộ Thân level 50 (live)."
+                    },
+                    {
+                        "feature":  "amulet_wash",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã tẩy luyện Bùa Hộ Thân 10 sao (live)."
+                    },
+                    {
+                        "feature":  "potential",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã kích hoạt full Tiềm Năng (live)."
+                    },
+                    {
+                        "feature":  "phuma",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã nâng full Phụ Ma level 40 (live)."
+                    },
+                    {
+                        "feature":  "duchon",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã nâng full Đúc Hồn level 20 (live)."
+                    },
+                    {
+                        "feature":  "avatar",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã mở full Bộ Sưu Tập và cập nhật cho client (live)."
+                    },
+                    {
+                        "feature":  "album",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã mở full Album Thẻ và cập nhật cho client (live)."
+                    },
+                    {
+                        "feature":  "training_basic",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã nâng Tu luyện cơ bản lên tối đa."
+                    },
+                    {
+                        "feature":  "training_second",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã nâng Tu luyện thuộc tính cấp 2 lên tối đa."
+                    },
+                    {
+                        "feature":  "training_element",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã nâng Tu luyện nguyên tố lên tối đa."
+                    },
+                    {
+                        "feature":  "card_level",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã nâng Thẻ Bài lên cấp tối đa."
+                    },
+                    {
+                        "feature":  "card_break",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã đột phá Thẻ Bài lên bộ tối đa."
+                    },
+                    {
+                        "feature":  "totem_level",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã nâng Vật Tổ lên cấp tối đa."
+                    },
+                    {
+                        "feature":  "totem_rank",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã tăng bậc Vật Tổ lên tối đa."
+                    },
+                    {
+                        "feature":  "temple_bless",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã chúc phúc Miếu Thần lên tối đa."
+                    },
+                    {
+                        "feature":  "temple_exalt",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã thăng hoa Miếu Thần lên tối đa."
+                    },
+                    {
+                        "feature":  "gold_weapon",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã dát vàng Vũ Khí."
+                    },
+                    {
+                        "feature":  "gold_hat",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã dát vàng Nón."
+                    },
+                    {
+                        "feature":  "gold_cloth",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã dát vàng Quần Áo."
+                    },
+                    {
+                        "feature":  "battle_soul",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã nâng Chiến Hồn lên tối đa."
+                    },
+                    {
+                        "feature":  "craft",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã nâng Chế Tạo lên tối đa."
+                    },
+                    {
+                        "feature":  "star_weapon",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã tăng sao Vũ Khí lên tối đa."
+                    },
+                    {
+                        "feature":  "star_hat",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã tăng sao Nón lên tối đa."
+                    },
+                    {
+                        "feature":  "star_cloth",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã tăng sao Quần Áo lên tối đa."
+                    },
+                    {
+                        "feature":  "subweapon_evolve",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã tiến hoá VK phụ lên level tối đa."
+                    },
+                    {
+                        "feature":  "necklace_train",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã luyện Dây Chuyền lên tối đa."
+                    },
+                    {
+                        "feature":  "necklace_cast",
+                        "ok":  true,
+                        "online":  true,
+                        "message":  "Đã đúc Dây Chuyền lên tối đa."
+                    }
+                ],
+    "checks":  {
+                   "Texp":  "56655500|56655500|56655500|56655500|56655500|56655500",
+                   "CardInfo":  "90|209|31|240",
+                   "Detail":  "10350|345860|{\"1\":20,\"2\":20,\"3\":20,\"4\":20,\"5\":20}|{\"0_6\":{\"UserID\":1,\"BagType\":0,\"Place\":6,\"Level\":10,\"TotalGhost\":0},\"0_0\":{\"UserID\":1,\"BagType\":0,\"Place\":0,\"Level\":10,\"TotalGhost\":0},\"0_4\":{\"UserID\":1,\"BagType\":0,\"Place\":4,\"Level\":10,\"TotalGhost\":0}}",
+                   "Temple":  "6|60|54940724|60",
+                   "Gemstone":  "5",
+                   "Gold":  "2",
+                   "PhuMa":  "5",
+                   "DucHon":  "5",
+                   "Amulet":  "50",
+                   "PotentialWrongCategory":  "0",
+                   "PotentialApplied":  "6",
+                   "AvatarRowsInDb":  "111"
+               }
+}

@@ -1,0 +1,266 @@
+@inject Microsoft.Extensions.Configuration.IConfiguration Config
+@{
+    var currentPath = (Context.Request.Path.Value ?? "/").ToLowerInvariant();
+    var displayName = User?.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value ?? User?.Identity?.Name ?? "";
+    var role = User?.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
+    var title = ViewData["Title"] as string ?? "Tổng quan";
+    var subtitle = ViewData["Subtitle"] as string ?? "Bảng điều khiển server & tool Gunny";
+    var avatarLetter = string.IsNullOrEmpty(displayName) ? "G" : displayName.Trim()[0].ToString().ToUpperInvariant();
+    var admincpUrl = Config["Vng:AdmincpUrl"];
+    var isEmbed = Context.Request.Query["embed"] == "1";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>@title - Gunny Panel</title>
+    <link rel="stylesheet" href="~/css/site.css?v=0.58.0" />
+    @RenderSection("Head", required: false)
+    <script>
+        try {
+            if (localStorage.getItem('gp-sidebar-collapsed') === '1') {
+                document.documentElement.classList.add('sidebar-collapsed');
+            }
+        } catch (e) { }
+    </script>
+</head>
+<body class="app-body@(isEmbed ? " embed" : "")">
+<div class="layout">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-badge">G</div>
+            <div class="brand-text">
+                <b>GUNNY<span>PANEL</span></b>
+                <small>QUẢN TRỊ SERVER</small>
+            </div>
+            <button type="button" class="sidebar-toggle" id="sidebar-toggle" title="Thu gọn thanh bên" aria-label="Thu gọn thanh bên" aria-expanded="true">&lsaquo;</button>
+        </div>
+        <nav>
+            <a href="/" class="@(currentPath == "/" ? "active" : null)">
+                <i class="fa fa-dashboard"></i><span>Tổng quan</span>
+            </a>
+            <a href="/Users" class="@(currentPath.StartsWith("/users") ? "active" : null)">
+                <i class="fa fa-users"></i><span>Người dùng</span>
+            </a>
+            <a href="/Shop" class="@(currentPath.StartsWith("/shop") ? "active" : null)">
+                <i class="fa fa-search"></i><span>Shop Explorer</span>
+            </a>
+            <a href="/Mail" class="@(currentPath.StartsWith("/mail") ? "active" : null)">
+                <i class="fa fa-envelope"></i><span>Hộp thư</span>
+            </a>
+            <a href="/ServerLive" class="@(currentPath.StartsWith("/serverlive") ? "active" : null)">
+                <i class="fa fa-bolt"></i><span>Server Live</span>
+            </a>
+            <a href="/Server" class="@(currentPath == "/server" ? "active" : null)">
+                <i class="fa fa-server"></i><span>Server</span>
+            </a>
+            <a href="/Jobs" class="@(currentPath.StartsWith("/jobs") ? "active" : null)">
+                <i class="fa fa-tools"></i><span>Jobs &amp; Tools</span>
+            </a>
+            <a href="/FlashRip" class="@(currentPath.StartsWith("/flashrip") ? "active" : null)">
+                <i class="fa fa-download"></i><span>Rip Flash</span>
+            </a>
+            <a href="/Xml" class="@(currentPath.StartsWith("/xml") ? "active" : null)">
+                <i class="fa fa-file"></i><span>XML Explorer</span>
+            </a>
+            <a href="/Bomb" class="@(currentPath.StartsWith("/bomb") ? "active" : null)">
+                <i class="fa fa-bomb"></i><span>Bomb Studio</span>
+            </a>
+            <a href="/Db" class="@(currentPath.StartsWith("/db") ? "active" : null)">
+                <i class="fa fa-database"></i><span>DB Query</span>
+            </a>
+            <a href="/Audit" class="@(currentPath.StartsWith("/audit") ? "active" : null)">
+                <i class="fa fa-history"></i><span>Audit log</span>
+            </a>
+            @if (!string.IsNullOrWhiteSpace(admincpUrl))
+            {
+                <a class="ext" href="@admincpUrl" target="_blank" rel="noopener">
+                    <i class="fa fa-external"></i><span>Admincp cũ ↗</span>
+                </a>
+            }
+        </nav>
+        <div class="side-footer">
+            <div class="user-box">
+                <div class="avatar">@avatarLetter</div>
+                <div>
+                    <div class="who">@displayName</div>
+                    <div class="role">@role</div>
+                </div>
+                <a href="/Logout" class="logout" title="Đăng xuất"><i class="fa fa-signout"></i></a>
+            </div>
+        </div>
+    </aside>
+    <div class="nav-backdrop" id="nav-backdrop"></div>
+    <main class="main">
+        <header class="topbar">
+            <div style="display:flex;align-items:center;gap:12px;min-width:0;">
+                <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Mở menu">☰</button>
+                <div style="min-width:0;">
+                    <h1>@title</h1>
+                    <p class="subtitle">@subtitle</p>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <span class="badge-ok"><i class="fa fa-bolt"></i> Gunny Panel v0.57.2</span>
+            </div>
+        </header>
+        <div class="content">
+            @RenderBody()
+        </div>
+        <footer class="app-footer">
+            Gunny Panel v0.57.2 · dữ liệu quest server VNG · chỉ dùng nội bộ
+        </footer>
+    </main>
+</div>
+<script>
+    (function () {
+        var body = document.body;
+        var toggle = document.getElementById('nav-toggle');
+        var backdrop = document.getElementById('nav-backdrop');
+        if (toggle) toggle.addEventListener('click', function () { body.classList.toggle('nav-open'); });
+        if (backdrop) backdrop.addEventListener('click', function () { body.classList.remove('nav-open'); });
+        window.addEventListener('resize', function () {
+            if (window.innerWidth > 920) body.classList.remove('nav-open');
+        });
+    })();
+</script>
+<script>
+    window.gpToast = function (text, isError) {
+        var old = document.getElementById('toast-wrap');
+        if (old) old.remove();
+        var wrap = document.createElement('div');
+        wrap.className = 'toast-wrap';
+        wrap.id = 'toast-wrap';
+        var box = document.createElement('div');
+        box.className = 'toast ' + (isError ? 'error' : 'success');
+        box.setAttribute('role', 'status');
+        var icon = document.createElement('span');
+        icon.className = 'toast-icon';
+        icon.textContent = isError ? '\u2717' : '\u2713';
+        var txt = document.createElement('span');
+        txt.className = 'toast-text';
+        txt.textContent = text || '';
+        var close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'toast-close';
+        close.textContent = '\u00d7';
+        close.onclick = function () { wrap.remove(); };
+        box.appendChild(icon);
+        box.appendChild(txt);
+        box.appendChild(close);
+        wrap.appendChild(box);
+        document.body.appendChild(wrap);
+        setTimeout(function () {
+            if (wrap.parentNode) {
+                wrap.classList.add('hide');
+                setTimeout(function () { wrap.remove(); }, 300);
+            }
+        }, 4500);
+    };
+</script>
+<script>
+    // Giữ vị trí cuộn khi chuyển trang phân trang (a.pg) — trang reload nhưng không nhảy về đầu trang.
+    (function () {
+        var KEY = 'gp-scroll:' + location.pathname;
+        function isPagerLink(node) {
+            while (node && node !== document) {
+                if (node.tagName === 'A' && node.className && (' ' + node.className + ' ').indexOf(' pg ') >= 0) {
+                    return node;
+                }
+                node = node.parentNode;
+            }
+            return null;
+        }
+        document.addEventListener('click', function (e) {
+            var link = isPagerLink(e.target);
+            if (!link) return;
+            var href = link.getAttribute('href') || '';
+            if (href === '#' || href === '') return; // nút disabled
+            try {
+                sessionStorage.setItem(KEY, String(window.pageYOffset || document.documentElement.scrollTop || 0));
+            } catch (err) { }
+        }, true);
+
+        try {
+            var saved = sessionStorage.getItem(KEY);
+            if (saved === null) return;
+            sessionStorage.removeItem(KEY);
+            var samePath = false;
+            if (document.referrer) {
+                var ref = document.createElement('a');
+                ref.href = document.referrer;
+                samePath = (ref.pathname === location.pathname);
+            }
+            var y = parseInt(saved, 10);
+            if (!samePath || !(y > 0)) return;
+            var cancelled = false;
+            var cancel = function () { cancelled = true; };
+            window.addEventListener('wheel', cancel, { passive: true });
+            window.addEventListener('touchstart', cancel, { passive: true });
+            window.addEventListener('keydown', cancel);
+            var restore = function () {
+                if (cancelled) return;
+                try { window.scrollTo(0, y); } catch (err) { }
+            };
+            // Ảnh/layout có thể load muộn làm chiều cao trang thay đổi → thử khôi phục vài lần.
+            var run = function () {
+                var delays = [0, 250, 700, 1500, 2500];
+                for (var i = 0; i < delays.length; i++) {
+                    (function (d) { setTimeout(restore, d); })(delays[i]);
+                }
+            };
+            if (document.readyState === 'complete') {
+                run();
+            } else {
+                window.addEventListener('load', run);
+            }
+        } catch (err) { }
+    })();
+</script>
+<script>
+    (function () {
+        var btn = document.getElementById('sidebar-toggle');
+        if (!btn) return;
+        var root = document.documentElement;
+        var KEY = 'gp-sidebar-collapsed';
+        function render() {
+            var collapsed = root.classList.contains('sidebar-collapsed');
+            btn.textContent = collapsed ? '\u203a' : '\u2039';
+            btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+            btn.title = collapsed ? 'M\u1edf r\u1ed9ng thanh b\u00ean' : 'Thu g\u1ecdn thanh b\u00ean';
+        }
+        render();
+        btn.addEventListener('click', function () {
+            root.classList.toggle('sidebar-collapsed');
+            try { localStorage.setItem(KEY, root.classList.contains('sidebar-collapsed') ? '1' : '0'); } catch (e) { }
+            render();
+        });
+    })();
+</script>
+@RenderSection("Scripts", required: false)
+
+@{ var toastOk = TempData["FlashMessage"] as string; var toastErr = TempData["FlashError"] as string; }
+@if (!string.IsNullOrEmpty(toastOk) || !string.IsNullOrEmpty(toastErr))
+{
+    var toastIsError = !string.IsNullOrEmpty(toastErr);
+    var toastText = toastIsError ? toastErr : toastOk;
+    <div class="toast-wrap" id="toast-wrap">
+        <div class="toast @(toastIsError ? "error" : "success")" role="status">
+            <span class="toast-icon">@(toastIsError ? "⚠" : "✅")</span>
+            <span class="toast-text">@toastText</span>
+            <button type="button" class="toast-close" aria-label="Đóng" onclick="document.getElementById('toast-wrap').remove();">×</button>
+        </div>
+    </div>
+    <script>
+        setTimeout(function () {
+            var el = document.getElementById('toast-wrap');
+            if (el) { el.classList.add('hide'); setTimeout(function () { el.remove(); }, 300); }
+        }, 4500);
+    </script>
+}
+</body>
+</html>

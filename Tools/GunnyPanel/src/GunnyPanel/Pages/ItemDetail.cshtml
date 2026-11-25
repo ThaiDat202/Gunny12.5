@@ -1,0 +1,60 @@
+@page "/Users/Item"
+@model GunnyPanel.Pages.ItemDetailModel
+@{
+    ViewData["Title"] = "Chi tiết vật phẩm";
+    ViewData["Subtitle"] = "Thuộc tính vật phẩm và template — chế độ chỉ đọc";
+    var ownerLink = Model.OwnerId > 0 ? "/Users/Details?id=" + Model.OwnerId : "/Users";
+}
+
+@if (!string.IsNullOrEmpty(Model.Error))
+{
+    <div class="alert danger">@Model.Error</div>
+    <a class="btn" href="@ownerLink">‹ Quay lại</a>
+}
+else
+{
+    <div class="page-head">
+        <h2>Vật phẩm #@Model.Id @(string.IsNullOrWhiteSpace(Model.OwnerNick) ? "" : "· " + Model.OwnerNick)</h2>
+        <div class="row gap" style="margin-top:0;">
+            <span class="badge-ok"><i class="fa fa-lock"></i> Chỉ đọc (SELECT)</span>
+            <a class="btn small" href="@ownerLink">‹ Về người dùng</a>
+        </div>
+    </div>
+
+    <div class="grid two">
+        <section class="card">
+            <h2>Dữ liệu trong túi (Sys_Users_Goods)</h2>
+            <div class="table-wrap">
+                <table class="list compact">
+                    <thead><tr><th>Cột</th><th>Giá trị</th></tr></thead>
+                    <tbody>
+                    @foreach (var item in Model.Goods)
+                    {
+                        <tr>
+                            <td class="mono">@item.Column</td>
+                            <td class="mono small">@(string.IsNullOrWhiteSpace(item.Value) ? "—" : item.Value)</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Template (Shop_Goods)</h2>
+            @if (Model.Template.Count == 0)
+            {
+                <p class="muted">Không tìm thấy template tương ứng trong Shop_Goods.</p>
+            }
+            else
+            {
+                <table class="mini">
+                    @foreach (var item in Model.Template)
+                    {
+                        <tr><td><b>@item.Column</b></td><td>@item.Value</td></tr>
+                    }
+                </table>
+            }
+        </section>
+    </div>
+}

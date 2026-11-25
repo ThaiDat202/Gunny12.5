@@ -1,0 +1,104 @@
+is_global = true
+build_property.TargetFramework = net10.0
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v10.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EntryPointFilePath = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = GunnyPanel
+build_property.RootNamespace = GunnyPanel
+build_property.ProjectDir = C:\Gunny\Gunny12.5\Tools\GunnyPanel\src\GunnyPanel\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 10.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Gunny\Gunny12.5\Tools\GunnyPanel\src\GunnyPanel
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 10.0
+build_property.EnableCodeStyleSeverity = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/Audit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/Bomb.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQm9tYi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/Db.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/FlashRip.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmxhc2hSaXAuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/ItemDetail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSXRlbURldGFpbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/Jobs.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSm9icy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/Logout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9nb3V0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/Mail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTWFpbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/ServerLive.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2VydmVyTGl2ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/ServerStatus.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2VydmVyU3RhdHVzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/Shared/_Pager.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9QYWdlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/Shop.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hvcC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/UserDetail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXNlckRldGFpbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/Users.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXNlcnMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/Xml.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcWG1sLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Gunny/Gunny12.5/Tools/GunnyPanel/src/GunnyPanel/Pages/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 

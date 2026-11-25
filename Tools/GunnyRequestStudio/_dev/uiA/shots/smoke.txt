@@ -1,0 +1,11 @@
+﻿uiA preview smoke - 2026-11-09 18:40:42
+page1-tổngquan_1440x900 -> C:\Gunny\ToolGunny\GunnyRequestStudio\_dev\uiA\shots\page1-tổngquan_1440x900.png | form=1440x900 | page=Tổng quan | pageSize=1182x792
+page2-riprequest_1440x900 -> C:\Gunny\ToolGunny\GunnyRequestStudio\_dev\uiA\shots\page2-riprequest_1440x900.png | form=1440x900 | page=Rip Request | pageSize=1182x792
+page3-càiđặt_1440x900 -> C:\Gunny\ToolGunny\GunnyRequestStudio\_dev\uiA\shots\page3-càiđặt_1440x900.png | form=1440x900 | page=Cài đặt | pageSize=1182x792
+dashboard_1180x720 -> C:\Gunny\ToolGunny\GunnyRequestStudio\_dev\uiA\shots\dashboard_1180x720.png | form=1180x720 | page=Tổng quan | pageSize=922x612
+rip_1180x720 -> C:\Gunny\ToolGunny\GunnyRequestStudio\_dev\uiA\shots\rip_1180x720.png | form=1180x720 | page=Rip Request | pageSize=922x612
+settings_1180x720 -> C:\Gunny\ToolGunny\GunnyRequestStudio\_dev\uiA\shots\settings_1180x720.png | form=1180x720 | page=Cài đặt | pageSize=922x612
+
+PAGE Tổng quan | icon=📊 | subtitle=Trạng thái tool trong một màn hình | size=922x612 | controls=48
+PAGE Rip Request | icon=⬇ | subtitle=Mirror request XML & promote template | size=922x612 | controls=63
+PAGE Cài đặt | icon=⚙ | subtitle=Đường dẫn · nhà phát hành · CSDL · tùy chọn | size=922x612 | controls=94

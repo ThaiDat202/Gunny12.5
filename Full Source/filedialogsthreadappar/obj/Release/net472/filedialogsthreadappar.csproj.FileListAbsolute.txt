@@ -1,0 +1,7 @@
+C:\Gunny\Gunny12.5\Full Source\filedialogsthreadappar\bin\Release\net472\FileDialogsThreadAppartmentSafe.dll
+C:\Gunny\Gunny12.5\Full Source\filedialogsthreadappar\bin\Release\net472\FileDialogsThreadAppartmentSafe.pdb
+C:\Gunny\Gunny12.5\Full Source\filedialogsthreadappar\obj\Release\net472\filedialogsthreadappar.csproj.AssemblyReference.cache
+C:\Gunny\Gunny12.5\Full Source\filedialogsthreadappar\obj\Release\net472\filedialogsthreadappar.GeneratedMSBuildEditorConfig.editorconfig
+C:\Gunny\Gunny12.5\Full Source\filedialogsthreadappar\obj\Release\net472\filedialogsthreadappar.csproj.CoreCompileInputs.cache
+C:\Gunny\Gunny12.5\Full Source\filedialogsthreadappar\obj\Release\net472\FileDialogsThreadAppartmentSafe.dll
+C:\Gunny\Gunny12.5\Full Source\filedialogsthreadappar\obj\Release\net472\FileDialogsThreadAppartmentSafe.pdb

@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "q5tVo0uE+VI=",
+  "success": true,
+  "projectFilePath": "C:\\Gunny\\Gunny12.5\\Full Source\\Fighting.Service\\Fighting.Service.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\hotha\\.nuget\\packages\\entityframework\\6.0.0\\entityframework.6.0.0.nupkg.sha512",
+    "C:\\Users\\hotha\\.nuget\\packages\\log4net\\2.0.14\\log4net.2.0.14.nupkg.sha512",
+    "C:\\Users\\hotha\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
+    "C:\\Users\\hotha\\.nuget\\packages\\protobuf-net\\2.4.0\\protobuf-net.2.4.0.nupkg.sha512",
+    "C:\\Users\\hotha\\.nuget\\packages\\zlib.net\\1.0.4\\zlib.net.1.0.4.nupkg.sha512"
+  ],
+  "logs": []
+}

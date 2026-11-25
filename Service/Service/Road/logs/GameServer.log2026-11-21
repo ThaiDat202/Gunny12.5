@@ -1,0 +1,36 @@
+2026-11-21 22:00:38,780 - [MAIN] - WARN  - Game.Server.Elf.ElfEquipConfigMgr - ElfEquipConfigMgr: loaded 1500 LinkPal rows, 30 item templates, 30 type/quality groups
+2026-11-21 22:00:38,955 - [MAIN] - WARN  - Game.Server.Farm.FarmRankJob - FarmRankJob: started (manor rank xml, every 5 min)
+2026-11-21 22:00:38,956 - [MAIN] - WARN  - Game.Server.Farm.FarmActivityMgr - FarmActivityMgr: started
+2026-11-21 22:00:41,985 - [18] - WARN  - Game.Server.Farm.ManorConfigMgr - ManorConfigMgr: loaded 82 manor item templates
+2026-11-21 22:00:41,988 - [18] - WARN  - Game.Server.Farm.ManorConfigMgr - ManorConfigMgr: loaded 6 manor upgrade types
+2026-11-21 22:00:41,994 - [18] - WARN  - Game.Server.Farm.ManorConfigMgr - ManorConfigMgr: loaded 5 manor level tables
+2026-11-21 22:00:41,997 - [18] - WARN  - Game.Server.Farm.ManorConfigMgr - ManorConfigMgr: loaded 23 manor tasks
+2026-11-21 22:00:41,999 - [18] - WARN  - Game.Server.Farm.ManorConfigMgr - ManorConfigMgr: loaded 20 pet food prices
+2026-11-21 22:01:28,218 - [17] - WARN  - Game.Server.Farm.ManorConfigMgr - ManorConfigMgr: loaded 2028 ServerConfig keys
+2026-11-21 22:01:28,219 - [17] - WARN  - Game.Server.Pet.PetExtConfigMgr - PetExtConfigMgr: loaded freeCells=8, maxCells=50, prices=56, awakenSuper=225, equipKindMap=35, superStone=12570, blendStone=12269
+2026-11-21 22:01:29,573 - [17] - WARN  - Game.Server.Elf.ElfMgr - ConvertElfEquipItems: player 2 equipBag=41 propBag=27 linkPalConfig=1500
+2026-11-21 22:01:29,957 - [17] - WARN  - Game.Server.GameObjects.GamePlayer - FightPower: player=2 basicSum=94901 atkBase=9528 defBase=9636 hp=1949202 secondWeapon=501 total=1918204354 fpBasicSum=94901 fpAtk=9528 fpDef=9636
+2026-11-21 22:01:34,498 - [22] - WARN  - Game.Server.GameObjects.GamePlayer - FightPower: player=2 basicSum=94901 atkBase=9528 defBase=9636 hp=1949202 secondWeapon=501 total=1918204354 fpBasicSum=94901 fpAtk=9528 fpDef=9636
+2026-11-21 22:02:25,580 - [18] - WARN  - Game.Server.GameObjects.GamePlayer - FightPower: player=2 basicSum=119492 atkBase=10406 defBase=10536 hp=2735646 secondWeapon=501 total=3147631575 fpBasicSum=119492 fpAtk=10406 fpDef=10536
+2026-11-21 22:02:52,689 - [17] - WARN  - Game.Server.GameObjects.GamePlayer - FightPower: player=2 basicSum=179315 atkBase=24680 defBase=24671 hp=2739000 secondWeapon=501 total=3518986154 fpBasicSum=125350 fpAtk=11377 fpDef=10536
+2026-11-21 22:03:08,298 - [26] - WARN  - Game.Server.GameObjects.GamePlayer - FightPower: player=2 basicSum=179315 atkBase=24680 defBase=24671 hp=2739000 secondWeapon=501 total=3518986154 fpBasicSum=125350 fpAtk=11377 fpDef=10536
+2026-11-21 22:03:09,788 - [28] - WARN  - Game.Server.GameObjects.GamePlayer - FightPower: player=2 basicSum=179315 atkBase=24680 defBase=24671 hp=2739000 secondWeapon=501 total=3518986154 fpBasicSum=125350 fpAtk=11377 fpDef=10536
+2026-11-21 22:27:59,514 - [MAIN] - WARN  - Game.Server.Elf.ElfEquipConfigMgr - ElfEquipConfigMgr: loaded 1500 LinkPal rows, 30 item templates, 30 type/quality groups
+2026-11-21 22:28:01,746 - [MAIN] - ERROR - Game.Base.BaseConnector - Connect 127.0.0.1:1593 failed!
+2026-11-21 22:28:01,751 - [MAIN] - ERROR - Game.Server.GameServer - Stop by Init Global Timers (InitComponent)
+2026-11-21 22:33:50,718 - [MAIN] - WARN  - Game.Server.Elf.ElfEquipConfigMgr - ElfEquipConfigMgr: loaded 1500 LinkPal rows, 30 item templates, 30 type/quality groups
+2026-11-21 22:33:50,883 - [MAIN] - WARN  - Game.Server.Farm.FarmRankJob - FarmRankJob: started (manor rank xml, every 5 min)
+2026-11-21 22:33:50,884 - [MAIN] - WARN  - Game.Server.Farm.FarmActivityMgr - FarmActivityMgr: started
+2026-11-21 22:33:53,905 - [18] - WARN  - Game.Server.Farm.ManorConfigMgr - ManorConfigMgr: loaded 82 manor item templates
+2026-11-21 22:33:53,908 - [18] - WARN  - Game.Server.Farm.ManorConfigMgr - ManorConfigMgr: loaded 6 manor upgrade types
+2026-11-21 22:33:53,913 - [18] - WARN  - Game.Server.Farm.ManorConfigMgr - ManorConfigMgr: loaded 5 manor level tables
+2026-11-21 22:33:53,916 - [18] - WARN  - Game.Server.Farm.ManorConfigMgr - ManorConfigMgr: loaded 23 manor tasks
+2026-11-21 22:33:53,917 - [18] - WARN  - Game.Server.Farm.ManorConfigMgr - ManorConfigMgr: loaded 20 pet food prices
+2026-11-21 22:34:43,709 - [17] - WARN  - Game.Server.Farm.ManorConfigMgr - ManorConfigMgr: loaded 2028 ServerConfig keys
+2026-11-21 22:34:43,712 - [17] - WARN  - Game.Server.Pet.PetExtConfigMgr - PetExtConfigMgr: loaded freeCells=8, maxCells=50, prices=56, awakenSuper=225, equipKindMap=35, superStone=12570, blendStone=12269
+2026-11-21 22:34:44,848 - [17] - WARN  - Game.Server.Elf.ElfMgr - ConvertElfEquipItems: player 2 equipBag=45 propBag=27 linkPalConfig=1500
+2026-11-21 22:34:45,123 - [17] - WARN  - Game.Server.GameObjects.GamePlayer - FightPower: player=2 basicSum=179315 atkBase=24680 defBase=24671 hp=2739000 secondWeapon=501 total=3518986154 fpBasicSum=125350 fpAtk=11377 fpDef=10536
+2026-11-21 22:35:22,214 - [22] - WARN  - Game.Server.GameObjects.GamePlayer - FightPower: player=2 basicSum=180473 atkBase=24680 defBase=24671 hp=2739212 secondWeapon=501 total=3518986355 fpBasicSum=125350 fpAtk=11377 fpDef=10536
+2026-11-21 22:35:24,507 - [22] - WARN  - Game.Server.GameObjects.GamePlayer - FightPower: player=2 basicSum=182339 atkBase=24680 defBase=24671 hp=2739228 secondWeapon=501 total=3518986371 fpBasicSum=125350 fpAtk=11377 fpDef=10536
+2026-11-21 22:35:26,405 - [22] - WARN  - Game.Server.GameObjects.GamePlayer - FightPower: player=2 basicSum=180473 atkBase=24680 defBase=24671 hp=2739212 secondWeapon=501 total=3518986355 fpBasicSum=125350 fpAtk=11377 fpDef=10536
+2026-11-21 22:35:53,633 - [27] - WARN  - Game.Server.GameObjects.GamePlayer - FightPower: player=2 basicSum=182339 atkBase=24680 defBase=24671 hp=2739228 secondWeapon=501 total=3518986371 fpBasicSum=125350 fpAtk=11377 fpDef=10536

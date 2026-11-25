@@ -1,0 +1,11 @@
+C:\Gunny\Gunny12.5\Full Source\game.base\bin\Release\net472\Game.Base.dll
+C:\Gunny\Gunny12.5\Full Source\game.base\bin\Release\net472\Game.Base.pdb
+C:\Gunny\Gunny12.5\Full Source\game.base\bin\Release\net472\log4net.dll
+C:\Gunny\Gunny12.5\Full Source\game.base\bin\Release\net472\protobuf-net.dll
+C:\Gunny\Gunny12.5\Full Source\game.base\bin\Release\net472\zlib.net.dll
+C:\Gunny\Gunny12.5\Full Source\game.base\obj\Release\net472\game.base.csproj.AssemblyReference.cache
+C:\Gunny\Gunny12.5\Full Source\game.base\obj\Release\net472\game.base.GeneratedMSBuildEditorConfig.editorconfig
+C:\Gunny\Gunny12.5\Full Source\game.base\obj\Release\net472\game.base.csproj.CoreCompileInputs.cache
+C:\Gunny\Gunny12.5\Full Source\game.base\obj\Release\net472\game.base.csproj.Up2Date
+C:\Gunny\Gunny12.5\Full Source\game.base\obj\Release\net472\Game.Base.dll
+C:\Gunny\Gunny12.5\Full Source\game.base\obj\Release\net472\Game.Base.pdb

@@ -1,0 +1,521 @@
+@page "/FlashRip"
+@model GunnyPanel.Pages.FlashRipModel
+@using System.Globalization
+@using GunnyPanel.Jobs
+@{
+    ViewData["Title"] = "Rip Flash VNG";
+    ViewData["Subtitle"] = "Mirror toàn bộ flash UI của NPH VNG về một thư mục — có loại trừ core 2.png / 4.png";
+    var active = Model.ActiveJob;
+    var report = Model.LastReport;
+    var reporting = active != null && active.Status is JobStatus.Pending or JobStatus.Running;
+    var scanMode = active != null && Model.IsScanJob(active);
+}
+
+@functions {
+    static string FmtBytes(long bytes)
+    {
+        if (bytes <= 0) return "0 KB";
+        if (bytes >= 1024L * 1024 * 1024) return (bytes / 1073741824.0).ToString("0.00", CultureInfo.InvariantCulture) + " GB";
+        if (bytes >= 1024L * 1024) return (bytes / 1048576.0).ToString("0.0", CultureInfo.InvariantCulture) + " MB";
+        return Math.Max(1, bytes / 1024).ToString(CultureInfo.InvariantCulture) + " KB";
+    }
+
+    static string JobStateCss(JobStatus s) => s switch
+    {
+        JobStatus.Pending or JobStatus.Running => "running",
+        JobStatus.Success => "ok",
+        JobStatus.Failed or JobStatus.Cancelled => "bad",
+        _ => ""
+    };
+
+    static string JobStateLabel(JobStatus s) => s switch
+    {
+        JobStatus.Pending => "Chờ chạy",
+        JobStatus.Running => "Đang chạy",
+        JobStatus.Success => "Thành công",
+        JobStatus.Failed => "Thất bại",
+        JobStatus.Cancelled => "Đã huỷ",
+        _ => s.ToString()
+    };
+}
+
+<section class="fp-hero">
+    <div class="fp-hero-left">
+        <div class="fp-hero-badge">⚡</div>
+        <div>
+            <h2>Flash Ripper <span class="fp-ver">v1.0</span></h2>
+            <p>
+                Kéo toàn bộ <code>/flash/</code> của Gunny VNG về một thư mục riêng, tự bỏ qua file CDN không có.
+                File core <b>2.png</b> và <b>4.png</b> (gắn với code client) mặc định <b>không bị rip</b>.
+            </p>
+            <div class="fp-hero-chips">
+                @if (Model.CdnState == "ok")
+                {
+                    <span class="fp-chip good">● CDN VNG: OK</span>
+                }
+                else if (Model.CdnState == "bad")
+                {
+                    <span class="fp-chip bad" title="@Model.CdnMessage">● CDN VNG: không kết nối được</span>
+                }
+                else
+                {
+                    <span class="fp-chip">● CDN VNG: chưa kiểm tra</span>
+                }
+                <span class="fp-chip">📁 Tham chiếu: @Model.ReferenceFileCount.ToString("N0") file · @FmtBytes(Model.ReferenceBytes)</span>
+                <span class="fp-chip warn">🛡 Mặc định bỏ: 2.png, 4.png</span>
+            </div>
+        </div>
+    </div>
+    <div class="fp-hero-right">
+        <div class="fp-mini">
+            <b>@(Model.LastRipReport?.Stats.Ok.ToString("N0") ?? "—")</b>
+            <span>file rip được</span>
+        </div>
+        <div class="fp-mini">
+            <b>@(Model.LastRipReport != null ? FmtBytes(Model.LastRipReport.Stats.Bytes) : "—")</b>
+            <span>dung lượng</span>
+        </div>
+        <div class="fp-mini">
+            <b>@(Model.LastRipReport?.Stats.Missing.ToString("N0") ?? "—")</b>
+            <span>CDN không có</span>
+        </div>
+    </div>
+</section>
+
+<form method="post" asp-page-handler="Start" id="fp-form" autocomplete="off">
+    <div class="fp-grid">
+        <section class="card fp-card">
+            <div class="fp-card-head">
+                <span class="fp-step">1</span>
+                <h2>Nguồn &amp; thư mục</h2>
+            </div>
+            <label>Nguồn CDN (Source)</label>
+            <input name="Source" id="fp-source" value="@Model.Source" spellcheck="false" data-default="@Model.Source" />
+            <p class="fp-hint">Gốc flash của NPH VNG. Bình thường giữ nguyên <b>https://gunny.vcdn.vn/flash/</b>.</p>
+
+            <label>Thư mục danh sách file (Reference)</label>
+            <input name="Reference" id="fp-reference" value="@Model.Reference" spellcheck="false" data-default="@Model.Reference" />
+            <p class="fp-hint">
+                CDN không cho liệt kê thư mục, nên tool lấy danh sách file từ cây client local (<b>WebSite\Flash</b>),
+                rồi kiểm tra từng file trên CDN — file nào có thì tải, 404 thì bỏ qua.
+            </p>
+
+            <label>Thư mục đích (Target) <button type="button" class="fp-copy" id="fp-copy-target" title="Sao chép đường dẫn">📋</button></label>
+            <input name="Target" id="fp-target" value="@Model.Target" spellcheck="false" data-default="@Model.Target" />
+            <p class="fp-hint">
+                Mặc định là thư mục <b>mới</b> cạnh client (<code>WebSite\FlashVNG</code>) — không ghi đè client đang chạy.
+                Không dùng ổ đĩa gốc (C:\) làm đích.
+            </p>
+            <button type="button" class="btn small" id="fp-reset">↺ Khôi phục mặc định</button>
+        </section>
+
+        <section class="card fp-card">
+            <div class="fp-card-head">
+                <span class="fp-step">2</span>
+                <h2>Loại trừ &amp; tuỳ chọn</h2>
+            </div>
+            <label>Loại trừ (mỗi dòng 1 pattern, hỗ trợ <code>*</code>)</label>
+            <textarea name="Exclude" id="fp-exclude" rows="4" spellcheck="false" data-default="@FlashRipModel.DefaultExclude">@Model.Exclude</textarea>
+            <div class="fp-quick">
+                <button type="button" data-add="2.png">+ 2.png</button>
+                <button type="button" data-add="4.png">+ 4.png</button>
+                <button type="button" data-add="config.xml">+ config.xml</button>
+                <button type="button" data-add="*.rar">+ *.rar</button>
+                <button type="button" data-add="ui/cn_trad/*">+ ui/cn_trad/*</button>
+            </div>
+            <p class="fp-hint">
+                Pattern so với <b>tên file</b> (vd <code>2.png</code>) hoặc <b>đường dẫn tương đối</b> (vd <code>ui/cn_trad/*</code>).
+            </p>
+
+            <div class="fp-switch-row">
+                <div>
+                    <b>Ghi đè file đã có ở đích</b>
+                    <small>Tắt = chỉ tải file còn thiếu (an toàn khi đích đã có dữ liệu).</small>
+                </div>
+                <button type="button" class="fp-toggle @(Model.Overwrite ? "on" : "")" id="fp-overwrite-toggle"
+                        aria-pressed="@(Model.Overwrite ? "true" : "false")" aria-label="Ghi đè file đã có"></button>
+                <input type="hidden" name="Overwrite" id="fp-overwrite" value="@(Model.Overwrite ? "true" : "false")" />
+            </div>
+
+            <div class="fp-switch-row">
+                <div>
+                    <b>Cho phép ghi đè trực tiếp vào Reference</b>
+                    <small>Mặc định CHẶN. Chỉ bật khi thật sự muốn đồng bộ vào chính cây client đang chạy.</small>
+                </div>
+                <button type="button" class="fp-toggle @(Model.AllowInPlace ? "on" : "")" id="fp-inplace-toggle"
+                        aria-pressed="@(Model.AllowInPlace ? "true" : "false")" aria-label="Cho phép ghi đè trực tiếp"></button>
+                <input type="hidden" name="AllowInPlace" id="fp-inplace" value="@(Model.AllowInPlace ? "true" : "false")" />
+            </div>
+
+            <div class="field-grid" style="margin-top:10px;">
+                <div>
+                    <label>Giới hạn số file (0 = tất cả)</label>
+                    <input type="number" name="MaxFiles" value="@Model.MaxFiles" min="0" />
+                </div>
+                <div>
+                    <label>Tải song song</label>
+                    <select name="Concurrency">
+                        @foreach (var n in new[] { 2, 4, 6, 8, 12, 16 })
+                        {
+                            <option value="@n" selected="@(n == Model.Concurrency)">@n luồng</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <section class="card fp-run">
+        <div class="fp-run-left">
+            <div class="fp-run-icon">🚀</div>
+            <div>
+                <b>@(reporting ? "Đang chạy job — xem tiến độ bên dưới..." : "Sẵn sàng rip")</b>
+                <p class="muted small" style="margin:2px 0 0;">
+                    Nên <b>Quét thử</b> trước để biết CDN có bao nhiêu file (không tải gì), sau đó mới <b>Tải thật</b>.
+                </p>
+                @if (!Model.CanRun)
+                {
+                    <p class="bad small" style="margin:4px 0 0;">Tài khoản của bạn chỉ được xem (role Moderator) — cần role Develop/Admin để chạy job.</p>
+                }
+            </div>
+        </div>
+        <div class="fp-run-actions">
+            <button type="submit" name="StartMode" value="scan" class="btn" disabled="@(((reporting || !Model.CanRun) ? "disabled" : null))">
+                🔍 Quét thử (dry-run)
+            </button>
+            <button type="submit" name="StartMode" value="rip" class="btn primary" id="fp-btn-rip" disabled="@(((reporting || !Model.CanRun) ? "disabled" : null))">
+                ⬇ Tải thật về thư mục đích
+            </button>
+        </div>
+    </section>
+</form>
+
+@if (active != null)
+{
+    <section class="card fp-live" id="fp-live" data-job-id="@active.Id" data-status="@((int)active.Status)">
+        <div class="page-head">
+            <h2>
+                @(reporting ? "Đang chạy" : "Lần chạy gần nhất")
+                <span class="muted small">
+                    @(scanMode ? "quét thử" : "tải thật") · @active.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss")
+                    @if (!string.IsNullOrEmpty(active.CreatedBy))
+                    {
+                        <text> · bởi @active.CreatedBy</text>
+                    }
+                </span>
+            </h2>
+            <div class="fp-live-actions">
+                <span class="fp-jobstate @JobStateCss(active.Status)">@JobStateLabel(active.Status)</span>
+                @if (reporting)
+                {
+                    <form method="post" asp-page-handler="Cancel" asp-route-id="@active.Id" style="margin:0;">
+                        <button type="submit" class="btn small danger">✕ Huỷ job</button>
+                    </form>
+                }
+            </div>
+        </div>
+
+        <div class="fp-progress-wrap">
+            <div class="fp-progress"><div id="fp-bar" style="width:@(active.Progress)%"></div></div>
+            <b id="fp-pct">@(active.Progress)%</b>
+        </div>
+        <p class="fp-msg" id="fp-msg">@(active.Log.LastOrDefault() ?? "Đang chờ...")</p>
+
+        @if (reporting || report == null)
+        {
+            <div class="fp-tiles">
+                <div class="fp-tile"><b id="fp-t-done">@Model.LiveStats.Done</b><span>đã xử lý</span></div>
+                <div class="fp-tile"><b id="fp-t-total">@Model.LiveStats.Total</b><span>tổng file</span></div>
+                <div class="fp-tile ok"><b id="fp-t-ok">@Model.LiveStats.Ok</b><span>tải OK</span></div>
+                <div class="fp-tile miss"><b id="fp-t-miss">@Model.LiveStats.Miss</b><span>CDN không có</span></div>
+                <div class="fp-tile fail"><b id="fp-t-fail">@Model.LiveStats.Fail</b><span>lỗi</span></div>
+                <div class="fp-tile speed"><b id="fp-t-speed">@Model.LiveStats.Speed</b><span>tốc độ</span></div>
+            </div>
+        }
+
+        <pre class="fp-console" id="fp-console">@string.Join("\n", active.Log.TakeLast(12))</pre>
+
+        @if (!reporting && !string.IsNullOrEmpty(active.Error))
+        {
+            <p class="bad" style="margin-top:12px;">❌ @active.Error</p>
+        }
+        @if (!reporting && active.Status == JobStatus.Success && !string.IsNullOrEmpty(active.Result) && report == null)
+        {
+            <details style="margin-top:12px;">
+                <summary class="muted small">Kết quả job (quét thử)</summary>
+                <pre class="fp-console" style="margin-top:8px;">@active.Result</pre>
+            </details>
+        }
+    </section>
+}
+
+@if (report != null)
+{
+    var stats = report.Stats;
+    var speed = stats.Seconds > 0 ? stats.Bytes / 1048576.0 / stats.Seconds : 0;
+    var failed = report.Files.Where(f => f.Status == "failed").Take(100).ToList();
+    var missing = report.Files.Where(f => f.Status == "missing").Take(60).ToList();
+    var exts = report.Files
+        .Where(f => f.Status == "ok")
+        .GroupBy(f => System.IO.Path.GetExtension(f.Path).ToLowerInvariant() is { Length: > 0 } e ? e : "(không đuôi)")
+        .Select(g => new { Ext = g.Key, Count = g.Count(), Bytes = g.Sum(x => x.Size) })
+        .OrderByDescending(g => g.Bytes)
+        .Take(10)
+        .ToList();
+
+    <section class="card fp-result">
+        <div class="page-head">
+            <h2>Kết quả rip <span class="muted small">@report.GeneratedAt.ToString("dd/MM/yyyy HH:mm:ss")</span></h2>
+            <div class="fp-live-actions">
+                <a class="btn small" href="@Url.Page("/FlashRip", "Download", new { job = active!.Id, kind = "report" })">⬇ Report JSON</a>
+                <a class="btn small" href="@Url.Page("/FlashRip", "Download", new { job = active!.Id, kind = "manifest" })">⬇ Manifest JSON</a>
+            </div>
+        </div>
+
+        <div class="fp-info">
+            <div><b>Nguồn:</b> <span class="fp-path">@report.Source</span></div>
+            <div><b>Đích:</b> <span class="fp-path">@report.Target</span></div>
+            <div><b>Tham chiếu:</b> <span class="fp-path">@report.Reference</span></div>
+            <div><b>Loại trừ:</b> @(string.IsNullOrWhiteSpace(report.Exclude) ? "(không)" : report.Exclude)</div>
+            <div><b>Thời gian:</b> @stats.Seconds.ToString("0.0", CultureInfo.InvariantCulture) giây (@speed.ToString("0.0", CultureInfo.InvariantCulture) MB/s)</div>
+            <div><b>Đã tải:</b> @FmtBytes(stats.Bytes)</div>
+        </div>
+
+        <p class="muted small" style="margin:-6px 0 12px;">
+            ⓘ Manifest chỉ gồm các file <b>tải OK</b> trong lần chạy này; file bỏ qua (đã có) không nằm trong manifest.
+            Report/manifest được lưu thêm bản riêng theo job ở <code>data\rip\jobs\</code> để xem lại lịch sử.
+        </p>
+
+        <div class="fp-tiles">
+            <div class="fp-tile"><b>@stats.Total.ToString("N0")</b><span>file xử lý</span></div>
+            <div class="fp-tile ok"><b>@stats.Ok.ToString("N0")</b><span>tải OK</span></div>
+            <div class="fp-tile miss"><b>@stats.Missing.ToString("N0")</b><span>CDN không có</span></div>
+            <div class="fp-tile fail"><b>@stats.Failed.ToString("N0")</b><span>lỗi</span></div>
+            <div class="fp-tile"><b>@stats.Skipped.ToString("N0")</b><span>bỏ qua (đã có)</span></div>
+            <div class="fp-tile"><b>@stats.Excluded.ToString("N0")</b><span>loại trừ</span></div>
+        </div>
+
+        @if (exts.Count > 0)
+        {
+            <div class="fp-ext">
+                @foreach (var g in exts)
+                {
+                    <span><b>@g.Ext</b> @g.Count.ToString("N0") file · @FmtBytes(g.Bytes)</span>
+                }
+            </div>
+        }
+
+        @if (failed.Count > 0)
+        {
+            <h3 class="fp-fail" style="font-size:14px;margin:10px 0 6px;">File lỗi tải (@stats.Failed)</h3>
+            <div class="table-wrap" style="max-height:32vh;">
+                <table class="list compact">
+                    <thead><tr><th>Đường dẫn</th><th>Lỗi</th></tr></thead>
+                    <tbody>
+                    @foreach (var f in failed)
+                    {
+                        <tr><td class="fp-path">@f.Path</td><td class="small">@f.Error</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        @if (missing.Count > 0)
+        {
+            <details style="margin-top:12px;">
+                <summary class="muted small">File CDN không có — bị bỏ qua (@stats.Missing)</summary>
+                <div class="table-wrap" style="max-height:32vh;margin-top:8px;">
+                    <table class="list compact">
+                        <thead><tr><th>Đường dẫn</th><th>Trạng thái</th></tr></thead>
+                        <tbody>
+                        @foreach (var f in missing)
+                        {
+                            <tr><td class="fp-path">@f.Path</td><td class="small">@f.Error</td></tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+        }
+
+        @if (Model.ReportError != null)
+        {
+            <p class="bad" style="margin-top:10px;">Không đọc được report: @Model.ReportError</p>
+        }
+    </section>
+}
+
+<section class="card">
+    <div class="page-head">
+        <h2>Lịch sử rip <span class="muted small">(@Model.RecentJobs.Count)</span></h2>
+        <a class="btn small" href="@Url.Page("/FlashRip")">↻ Làm mới</a>
+    </div>
+    @if (Model.RecentJobs.Count == 0)
+    {
+        <p class="muted">Chưa có lần rip nào. Bấm <b>Quét thử</b> ở trên để bắt đầu.</p>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="list compact">
+                <thead>
+                <tr><th>Thời gian</th><th>Chế độ</th><th>Đích</th><th>Trạng thái</th><th>Tiến độ</th><th></th></tr>
+                </thead>
+                <tbody>
+                @foreach (var job in Model.RecentJobs)
+                {
+                    <tr>
+                        <td class="mono">@job.CreatedAt.ToString("dd/MM HH:mm:ss")</td>
+                        <td>@(Model.IsScanJob(job) ? "Quét thử" : "Tải thật")</td>
+                        <td class="fp-recent-target">@(job.Parameters.TryGetValue("target", out var t) ? t : "")</td>
+                        <td class="@JobStateCss(job.Status)">@JobStateLabel(job.Status)</td>
+                        <td>
+                            <div class="progress"><div style="width:@(job.Progress)%"></div></div>
+                            <span class="muted small">@job.Progress%</span>
+                        </td>
+                        <td><a class="btn small" href="@Url.Page("/FlashRip", new { job = job.Id })">Xem</a></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+@section Scripts {
+    <script>
+        (function () {
+            var form = document.getElementById('fp-form');
+            if (!form) return;
+
+            // --- toggle công tắc (ghi đè / cho phép ghi đè trực tiếp) ---
+            [['fp-overwrite-toggle', 'fp-overwrite'], ['fp-inplace-toggle', 'fp-inplace']].forEach(function (pair) {
+                var t = document.getElementById(pair[0]);
+                var h = document.getElementById(pair[1]);
+                if (!t || !h) return;
+                t.addEventListener('click', function () {
+                    var on = !t.classList.contains('on');
+                    t.classList.toggle('on', on);
+                    t.setAttribute('aria-pressed', on ? 'true' : 'false');
+                    h.value = on ? 'true' : 'false';
+                });
+            });
+
+            // --- thêm nhanh pattern loại trừ ---
+            var ta = document.getElementById('fp-exclude');
+            document.querySelectorAll('.fp-quick button[data-add]').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    if (!ta) return;
+                    var value = btn.getAttribute('data-add');
+                    var lines = (ta.value || '').split(/\r?\n/).map(function (x) { return x.trim(); }).filter(Boolean);
+                    if (lines.indexOf(value) < 0) lines.push(value);
+                    ta.value = lines.join('\n');
+                });
+            });
+
+            // --- khôi phục mặc định ---
+            var reset = document.getElementById('fp-reset');
+            if (reset) {
+                reset.addEventListener('click', function () {
+                    document.querySelectorAll('#fp-form [data-default]').forEach(function (el) {
+                        el.value = el.getAttribute('data-default');
+                    });
+                });
+            }
+
+            // --- copy target ---
+            var copy = document.getElementById('fp-copy-target');
+            if (copy) {
+                copy.addEventListener('click', function () {
+                    var box = document.getElementById('fp-target');
+                    if (!box) return;
+                    try {
+                        navigator.clipboard.writeText(box.value);
+                        if (window.gpToast) window.gpToast('Đã sao chép đường dẫn đích');
+                    } catch (e) { }
+                });
+            }
+
+            // --- submit: xác nhận khi tải thật ---
+            form.addEventListener('submit', function (e) {
+                var mode = (e.submitter && e.submitter.value) || 'scan';
+                if (mode === 'rip') {
+                    var target = (document.getElementById('fp-target') || {}).value || '';
+                    if (!confirm('TẢI THẬT flash VNG về:\n' + target + '\n\nTiếp tục?')) {
+                        e.preventDefault();
+                        return;
+                    }
+                }
+                var buttons = form.querySelectorAll('button[type="submit"]');
+                buttons.forEach(function (b) { b.disabled = true; });
+                var b = document.getElementById('fp-btn-rip');
+                if (b && mode === 'rip') b.textContent = '⏳ Đang chạy...';
+            });
+
+            // --- poll job đang chạy ---
+            var live = document.getElementById('fp-live');
+            if (!live) return;
+            var jobId = live.getAttribute('data-job-id');
+            var status = parseInt(live.getAttribute('data-status'), 10);
+            if (!jobId || (status !== 0 && status !== 1)) return;
+
+            function setText(id, value) {
+                var el = document.getElementById(id);
+                if (el) el.textContent = value;
+            }
+
+            function parseStats(line) {
+                var m = /TAI (\d+)\/(\d+) \| OK (\d+) \| 404 (\d+) \| loi (\d+) \| bo qua (\d+) \| ([\d.]+) MB\/s/.exec(line || '');
+                if (m) return { done: m[1], total: m[2], ok: m[3], missing: m[4], failed: m[5], speed: m[7] + ' MB/s' };
+                var q = /QUET (\d+)\/(\d+) \| CDN co (\d+) \| 404 (\d+) \| loi (\d+) \| (\d+) req\/s/.exec(line || '');
+                if (q) return { done: q[1], total: q[2], ok: q[3], missing: q[4], failed: q[5], speed: q[6] + ' req/s' };
+                return null;
+            }
+
+            function render(job) {
+                var progress = job.progress || 0;
+                var bar = document.getElementById('fp-bar');
+                if (bar) bar.style.width = progress + '%';
+                setText('fp-pct', progress + '%');
+                var log = job.log || [];
+                var last = log.length ? log[log.length - 1] : '';
+                var msg = document.getElementById('fp-msg');
+                if (msg) msg.textContent = last;
+                var stats = null;
+                for (var i = log.length - 1; i >= 0; i--) {
+                    stats = parseStats(log[i]);
+                    if (stats) break;
+                }
+                if (stats) {
+                    setText('fp-t-done', stats.done);
+                    setText('fp-t-total', stats.total);
+                    setText('fp-t-ok', stats.ok);
+                    setText('fp-t-miss', stats.missing);
+                    setText('fp-t-fail', stats.failed);
+                    setText('fp-t-speed', stats.speed);
+                }
+                var console = document.getElementById('fp-console');
+                if (console) {
+                    console.textContent = log.slice(-12).join('\n');
+                    console.scrollTop = console.scrollHeight;
+                }
+                var st = job.status;
+                if (st !== 0 && st !== 1) {
+                    if (pollTimer) clearInterval(pollTimer);
+                    setTimeout(function () { location.reload(); }, 1200);
+                }
+            }
+
+            var pollTimer = null;
+            function poll() {
+                fetch('/api/jobs/' + jobId, { credentials: 'same-origin' })
+                    .then(function (r) { return r.ok ? r.json() : null; })
+                    .then(function (j) { if (j) render(j); })
+                    .catch(function () { });
+            }
+            poll();
+            pollTimer = setInterval(poll, 1200);
+        })();
+    </script>
+}

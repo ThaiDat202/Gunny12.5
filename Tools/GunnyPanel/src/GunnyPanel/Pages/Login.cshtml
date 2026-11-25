@@ -1,0 +1,43 @@
+@page
+@model GunnyPanel.Pages.LoginModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Đăng nhập - Gunny Panel</title>
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body class="login-body">
+<div class="login-wrap">
+    <div class="login-box">
+        <div class="login-logo">GUNNY <span>PANEL</span></div>
+        <p class="login-tagline">Bảng điều khiển server &amp; tool Gunny</p>
+
+        @if (!string.IsNullOrEmpty(Model.Error))
+        {
+            <div class="alert danger">@Model.Error</div>
+        }
+
+        <form method="post">
+            @Html.AntiForgeryToken()
+            <label><i class="fa fa-user"></i> Tài khoản</label>
+            <input name="UserName" value="@Model.UserName" autocomplete="username" autofocus placeholder="admin" />
+            <label><i class="fa fa-lock"></i> Mật khẩu</label>
+            <input name="Password" type="password" autocomplete="current-password" placeholder="••••••••" />
+            <button type="submit" class="btn primary block"><i class="fa fa-arrow-right"></i> ĐĂNG NHẬP</button>
+        </form>
+
+        <div class="login-hint">
+            Tài khoản test: <b>admin/Admin@123</b> · <b>gm/Gm@123</b> · <b>viewer/View@123</b>
+        </div>
+    </div>
+    <div class="login-credit">Gunny Panel v0.31 · nội bộ · art từ Gunny VNG</div>
+</div>
+</body>
+</html>

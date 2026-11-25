@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "rVVmkDBRYVo=",
+  "success": true,
+  "projectFilePath": "C:\\Gunny\\Gunny12.5\\Full Source\\ddtankhelp\\ddtankhelp.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\hotha\\.nuget\\packages\\microsoft.netframework.referenceassemblies\\1.0.3\\microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
+    "C:\\Users\\hotha\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net46\\1.0.3\\microsoft.netframework.referenceassemblies.net46.1.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,19 @@
+@model GunnyPanel.Pages.Shared.Pager
+@{
+    var totalPages = Model.TotalPages;
+    var start = Math.Max(1, Model.Page - 2);
+    var end = Math.Min(totalPages, start + 4);
+    start = Math.Max(1, end - 4);
+}
+@if (totalPages > 1)
+{
+    <nav class="pager" aria-label="Phân trang">
+        <a class="pg @(Model.Page <= 1 ? "disabled" : null)" href="@(Model.Page <= 1 ? "#" : Model.UrlFor(Model.Page - 1))">‹ Trước</a>
+        @for (var i = start; i <= end; i++)
+        {
+            <a class="pg @(i == Model.Page ? "active" : null)" href="@Model.UrlFor(i)">@i</a>
+        }
+        <a class="pg @(Model.Page >= totalPages ? "disabled" : null)" href="@(Model.Page >= totalPages ? "#" : Model.UrlFor(Model.Page + 1))">Sau ›</a>
+        <span class="pg-info">Trang @Model.Page/@totalPages · @Model.Total mục</span>
+    </nav>
+}

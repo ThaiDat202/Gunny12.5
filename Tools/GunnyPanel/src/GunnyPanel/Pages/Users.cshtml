@@ -1,0 +1,103 @@
+@page
+@model GunnyPanel.Pages.UsersModel
+@{
+    ViewData["Title"] = "Người dùng";
+    ViewData["Subtitle"] = "Tìm kiếm tài khoản, xem level / lực chiến / tiền tệ — chế độ chỉ đọc";
+}
+
+<section class="card">
+    <div class="page-head">
+        <h2>Người dùng <span class="muted small">(@Model.Total)</span></h2>
+        <span class="badge-ok"><i class="fa fa-lock"></i> Chỉ đọc (SELECT)</span>
+    </div>
+    <p class="muted small">Nguồn: <code>Db_Tank.dbo.Sys_Users_Detail</code> · tìm theo NickName / UserName / Email / UserID.</p>
+
+    <form method="get" class="grid two" style="margin-top:0;gap:12px;align-items:end;">
+        <div>
+            <label>Tìm kiếm</label>
+            <input name="q" value="@Model.Q" placeholder="Nick / tài khoản / Email / UserID..." />
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:150px;">
+                <label>Sắp xếp</label>
+                <select name="sort">
+                    <option value="userid" selected="@(Model.Sort == "userid")">UserID</option>
+                    <option value="level" selected="@(Model.Sort == "level")">Level cao → thấp</option>
+                    <option value="fight" selected="@(Model.Sort == "fight")">Lực chiến cao → thấp</option>
+                    <option value="money" selected="@(Model.Sort == "money")">Xu nhiều → ít</option>
+                    <option value="gold" selected="@(Model.Sort == "gold")">Vàng nhiều → ít</option>
+                    <option value="gp" selected="@(Model.Sort == "gp")">GP cao → thấp</option>
+                    <option value="last" selected="@(Model.Sort == "last")">Online gần nhất</option>
+                </select>
+            </div>
+            <div style="flex:0 0 150px;">
+                <label>Trạng thái</label>
+                <select name="online">
+                    <option value="" selected="@(Model.Online == null)">Tất cả</option>
+                    <option value="1" selected="@(Model.Online == 1)">Chỉ Online</option>
+                </select>
+            </div>
+        </div>
+        <div class="row gap" style="grid-column:1/-1;margin-top:4px;">
+            <button type="submit" class="btn primary"><i class="fa fa-search"></i> Tìm / Lọc</button>
+            @if (!string.IsNullOrWhiteSpace(Model.Q) || Model.Online != null || Model.Sort != "userid")
+            {
+                <a class="btn" href="/Users">Xóa lọc</a>
+            }
+            <a class="btn" href="/Users?handler=Export&q=@Uri.EscapeDataString(Model.Q ?? "")&sort=@Model.Sort&online=@Model.Online"><i class="fa fa-download"></i> Xuất CSV</a>
+        </div>
+    </form>
+
+    @if (!string.IsNullOrEmpty(Model.Error))
+    {
+        <div class="alert danger">@Model.Error</div>
+    }
+
+    @if (Model.Users.Count == 0)
+    {
+        <p class="muted" style="margin-top:16px;">Không tìm thấy người dùng phù hợp.</p>
+    }
+    else
+    {
+        <div class="table-wrap" style="margin-top:14px;">
+            <table class="list">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>NickName</th>
+                    <th>Tài khoản</th>
+                    <th>Giới tính</th>
+                    <th>Level</th>
+                    <th>Lực chiến</th>
+                    <th>Xu</th>
+                    <th>Vàng</th>
+                    <th>GP</th>
+                    <th>Trạng thái</th>
+                    <th>Lần cuối</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td class="mono">@user.UserID</td>
+                        <td><b>@user.NickName</b></td>
+                        <td>@user.UserName</td>
+                        <td>@(user.Sex ? "♂" : "♀")</td>
+                        <td class="mono">@user.Grade</td>
+                        <td>@user.FightPower.ToString("N0")</td>
+                        <td>@user.Money.ToString("N0")</td>
+                        <td>@user.Gold.ToString("N0")</td>
+                        <td>@user.GP.ToString("N0")</td>
+                        <td>@(user.State > 0 ? Html.Raw("<span class=\"state-pill online\">Online</span>") : Html.Raw("<span class=\"state-pill offline\">Offline</span>"))</td>
+                        <td class="mono small">@user.LastDate</td>
+                        <td><a class="btn small" href="/Users/Details?id=@user.UserID"><i class="fa fa-user"></i> Chi tiết</a></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <partial name="_Pager" model="Model.Pager" />
+    }
+</section>

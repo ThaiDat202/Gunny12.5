@@ -1,0 +1,486 @@
+@page "/ServerLive"
+@model GunnyPanel.Pages.ServerLiveModel
+@{
+    ViewData["Title"] = "Server Live";
+    ViewData["Subtitle"] = "Điều khiển live qua CenterService có sẵn: thông báo, kick, trạng thái, reload, chat";
+}
+
+<div id="live-root">
+    @Html.AntiForgeryToken()
+
+    <div class="page-head">
+        <h2>Server Live <span class="muted small">(Zone @Model.ZoneId)</span></h2>
+        <div class="row gap" style="margin-top:0;">
+            <span class="badge-ok"><i class="fa fa-bolt"></i> CenterService: @(Model.CenterOk ? "OK" : "Không phản hồi")</span>
+            <a class="btn small" href="/ServerLive"><i class="fa fa-refresh"></i> Tải lại trang</a>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Error))
+    {
+        <div class="alert danger">@Model.Error</div>
+    }
+
+    <div class="alert info">
+        Trang này gọi <b>CenterService</b> (WCF có sẵn của Gunny) — <b>không sửa Full Source / Service</b>.
+        Thao tác live ảnh hưởng người chơi đang online; mọi lần gọi đều được ghi <b>audit</b>
+        (<code>road.notice</code>, <code>road.kick</code>, <code>road.reload</code>, <code>road.serverlist</code>, <code>road.shutdown</code>).
+        Người chơi test sẽ thấy hiệu lực ngay (không cần relogin) với thông báo / kick.
+    </div>
+
+    <div class="grid two">
+        <section class="card">
+            <h2>CenterService</h2>
+            <table class="mini">
+                <tr>
+                    <td><b>Endpoint</b></td>
+                    <td class="mono small">@Model.CenterUrl</td>
+                </tr>
+                <tr>
+                    <td><b>Trạng thái</b></td>
+                    <td class="@(Model.CenterOk ? "ok" : "bad")">@(Model.CenterOk ? "● " : "○ ")@Model.CenterMessage</td>
+                </tr>
+                <tr>
+                    <td><b>Zone</b></td>
+                    <td class="mono">@Model.ZoneId</td>
+                </tr>
+                <tr>
+                    <td><b>LoginKey (chữ ký)</b></td>
+                    <td class="@(Model.HasLoginKey ? "ok" : "bad")">@(Model.HasLoginKey ? "Đã nạp" : "Thiếu — cấu hình Panel:LoginKey")</td>
+                </tr>
+                <tr>
+                    <td><b>Người chơi (DB)</b></td>
+                    <td class="mono">@Model.OnlineCount online / @Model.TotalUsers tài khoản</td>
+                </tr>
+                <tr>
+                    <td><b>Shutdown</b></td>
+                    <td>@(Model.ShutdownEnabled ? "Đang bật (role Develop)" : "Đang tắt (Panel:EnableShutdown=false)")</td>
+                </tr>
+            </table>
+            <p class="muted small">
+                Kiến trúc: Panel → <code>basicHttp</code> <code>CenterServicePhP</code> tại port 4109
+                (WCF net.tcp 2009 vẫn được Road dùng như cũ). File cấu hình key: <code>Center.Service.exe.config</code>.
+            </p>
+        </section>
+
+        <section class="card">
+            <h2>Gửi thông báo toàn server</h2>
+            @if (!Model.CanWrite)
+            {
+                <div class="alert">Role hiện tại chỉ đọc — cần <b>Admin</b> hoặc <b>Develop</b> để gửi thông báo.</div>
+            }
+            else
+            {
+                <form id="live-notice-form">
+                    <label>Nội dung thông báo</label>
+                    <textarea name="message" rows="3" maxlength="500" placeholder="VD: Bảo trì server lúc 22:00 hôm nay..."></textarea>
+                    <label>Kiểu hiển thị</label>
+                    <select name="type">
+                        <option value="3" selected>System notice (3 — khuyến nghị)</option>
+                        <option value="0">GM notice (0)</option>
+                        <option value="4">Auto notice (4)</option>
+                    </select>
+                    <div class="row gap" style="margin-top:10px;">
+                        <button type="submit" class="btn primary"><i class="fa fa-bullhorn"></i> Gửi thông báo</button>
+                        <span class="muted small">Hiện toast/notice cho client đang online. Tối đa 500 ký tự, không có ký tự “|”.</span>
+                    </div>
+                </form>
+            }
+        </section>
+    </div>
+
+    <section class="card">
+        <div class="page-head">
+            <h2>Người chơi online <span class="muted small">(@Model.OnlineCount)</span></h2>
+            <span class="badge-ok"><i class="fa fa-database"></i> DB State &gt; 0</span>
+        </div>
+
+        @if (Model.CanWrite)
+        {
+            <div class="row gap" style="flex-wrap:wrap;">
+                <input id="live-user-id" type="number" min="1" inputmode="numeric" placeholder="UserID..." style="max-width:150px;" />
+                <button type="button" class="btn small" id="live-check-state"><i class="fa fa-search"></i> Kiểm tra trạng thái (CenterService)</button>
+                <span class="muted small" id="live-state-result">Nhập UserID rồi bấm kiểm tra để hỏi trạng thái thật từ CenterService.</span>
+            </div>
+        }
+
+        @if (Model.Online.Count == 0)
+        {
+            <p class="muted" style="margin-top:12px;">
+                Không có người chơi online trong DB (<code>Sys_Users_Detail.State &gt; 0</code>).
+                Kick chỉ thành công khi CenterService thấy người chơi đang kết nối ở zone @Model.ZoneId.
+            </p>
+        }
+        else
+        {
+            <div class="table-wrap" style="margin-top:14px;">
+                <table class="list compact">
+                    <thead>
+                    <tr>
+                        <th>UserID</th>
+                        <th>NickName</th>
+                        <th>Tài khoản</th>
+                        <th>Level</th>
+                        <th>State</th>
+                        <th>Lần cuối</th>
+                        @if (Model.CanWrite)
+                        {
+                            <th>Thao tác</th>
+                        }
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var user in Model.Online)
+                    {
+                        <tr>
+                            <td class="mono">@user.UserID</td>
+                            <td><b>@user.NickName</b></td>
+                            <td>@user.UserName</td>
+                            <td class="mono">@user.Grade</td>
+                            <td><span class="state-pill online">Online</span></td>
+                            <td class="mono small">@user.LastDate</td>
+                            @if (Model.CanWrite)
+                            {
+                                <td class="row gap" style="margin:0;">
+                                    <button type="button" class="btn small danger" data-kick-id="@user.UserID" data-kick-nick="@user.NickName"><i class="fa fa-signout"></i> Kick</button>
+                                    <a class="btn small" href="/Users/Details?id=@user.UserID">Chi tiết</a>
+                                </td>
+                            }
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+        <p class="muted small" style="margin-top:10px;">
+            Ghi chú: <code>State</code> trong DB do server ghi khi save/tắt; nếu vừa online/offline, dùng nút
+            <b>Kiểm tra trạng thái</b> để hỏi CenterService (chính xác theo kết nối login).
+            Kick gửi lệnh <code>KitoffUser</code> tới client đang online; có thể kick từ trang chi tiết user.
+        </p>
+    </section>
+
+    <div class="grid two">
+        <section class="card">
+            <h2>Reload manager / game data</h2>
+            @if (!Model.CanWrite)
+            {
+                <div class="alert">Role hiện tại chỉ đọc — cần <b>Admin</b> / <b>Develop</b> để reload.</div>
+            }
+            else
+            {
+                <form id="live-reload-form">
+                    <label>Loại reload (<code>eReloadType</code>)</label>
+                    <select name="type">
+                        @foreach (var option in Model.ReloadOptions)
+                        {
+                            <option value="@option.Type">@option.Label</option>
+                        }
+                    </select>
+                    <div class="row gap" style="margin-top:10px;flex-wrap:wrap;">
+                        <button type="submit" class="btn primary"><i class="fa fa-refresh"></i> Reload</button>
+                        <span class="muted small">Gửi lệnh reload tới <b>tất cả Road</b> đang kết nối Center. Reload có thể treo vài giây — báo trước nếu server đông người.</span>
+                    </div>
+                </form>
+            }
+        </section>
+
+        <section class="card">
+            <h2>Danh sách server</h2>
+            @if (!Model.CanWrite)
+            {
+                <div class="alert">Role hiện tại chỉ đọc.</div>
+            }
+            else
+            {
+                <p class="muted small">
+                    Đọc lại <code>ServerList</code> từ DB và gửi thông tin server mới tới Center/Road
+                    (dùng khi vừa sửa danh sách server trong DB).
+                </p>
+                <div class="row gap" style="flex-wrap:wrap;">
+                    <button type="button" class="btn" id="live-reload-serverlist"><i class="fa fa-server"></i> Reload danh sách server</button>
+                </div>
+            }
+        </section>
+    </div>
+
+    <section class="card">
+        <div class="page-head">
+            <h2>Chat gần đây <span class="muted small">(@Model.Chats.Count)</span></h2>
+            <div class="row gap" style="margin-top:0;">
+                <span class="badge-ok"><i class="fa fa-comments"></i> CenterService.GetAllChat</span>
+                <button type="button" class="btn small" id="live-chat-refresh"><i class="fa fa-refresh"></i> Tải lại chat</button>
+            </div>
+        </div>
+        <p class="muted small" id="live-chat-message">@Model.ChatMessage</p>
+        <div class="chat-list" id="live-chat-list">
+            @if (Model.Chats.Count == 0)
+            {
+                <div class="chat-empty">Chưa có dòng chat nào trong bộ đệm của CenterService.</div>
+            }
+            else
+            {
+                @foreach (var chat in Model.Chats)
+                {
+                    <div class="chat-item">
+                        <div class="chat-meta">
+                            <span class="mono">@chat.Time.ToString("dd/MM/yyyy HH:mm:ss")</span>
+                            <b>@chat.NickName</b>
+                            <span class="muted small">type @chat.Type · zone @chat.ZoneId</span>
+                        </div>
+                        <div class="chat-msg">@chat.Message</div>
+                    </div>
+                }
+            }
+        </div>
+        <p class="muted small">
+            CenterService giữ tối đa ~100 dòng (world/guild/loa và thông báo hệ thống do Road forward về),
+            tự xoá khi vượt ngưỡng. Chỉ đọc — không có thao tác ghi.
+        </p>
+    </section>
+
+    @if (Model.CanShutdown)
+    {
+        <section class="card danger-card">
+            <h2>Shutdown server (nguy hiểm)</h2>
+            <div class="alert danger">
+                Đóng Road.Service của zone — người chơi đang online sẽ bị ngắt. Chỉ dùng khi bảo trì có kế hoạch.
+                Yêu cầu role <b>Develop</b> + cấu hình <code>Panel:EnableShutdown=true</code> + gõ chữ xác nhận lớp 2.
+            </div>
+            <form id="live-shutdown-form">
+                <div class="field-grid">
+                    <div>
+                        <label>ZoneId</label>
+                        <input type="number" name="zoneId" value="@Model.ZoneId" min="1" />
+                    </div>
+                    <div>
+                        <label>Gõ <b>SHUTDOWN</b> để xác nhận</label>
+                        <input name="confirmText" placeholder="SHUTDOWN" autocomplete="off" />
+                    </div>
+                </div>
+                <button type="submit" class="btn danger" style="margin-top:12px;"><i class="fa fa-power-off"></i> Shutdown zone</button>
+            </form>
+        </section>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var root = document.getElementById('live-root');
+            if (!root) return;
+
+            function token() {
+                var input = root.querySelector('input[name="__RequestVerificationToken"]');
+                return input ? input.value : '';
+            }
+
+            function say(text, isError) {
+                if (window.gpToast) { window.gpToast(text, !!isError); }
+                else { alert(text); }
+            }
+
+            function postJson(handler, data) {
+                var body = new FormData();
+                Object.keys(data).forEach(function (key) {
+                    if (data[key] !== undefined && data[key] !== null) body.append(key, data[key]);
+                });
+                body.append('__RequestVerificationToken', token());
+                return fetch('/ServerLive?handler=' + handler, {
+                    method: 'POST',
+                    body: body,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                }).then(function (response) {
+                    return response.json().then(function (json) { return json; }, function () {
+                        return { ok: false, message: 'Server trả về dữ liệu không hợp lệ (HTTP ' + response.status + ').' };
+                    });
+                });
+            }
+
+            function getJson(url) {
+                return fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(function (response) {
+                        return response.json().then(function (json) { return json; }, function () {
+                            return { ok: false, message: 'Server trả về dữ liệu không hợp lệ (HTTP ' + response.status + ').' };
+                        });
+                    });
+            }
+
+            function busy(button, isBusy, busyText) {
+                if (!button) return;
+                if (isBusy) {
+                    button.setAttribute('data-old-html', button.innerHTML);
+                    button.disabled = true;
+                    button.innerHTML = busyText || 'Đang chạy...';
+                } else {
+                    button.disabled = false;
+                    var old = button.getAttribute('data-old-html');
+                    if (old) button.innerHTML = old;
+                }
+            }
+
+            // ----- gửi thông báo
+            var noticeForm = document.getElementById('live-notice-form');
+            if (noticeForm) {
+                noticeForm.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    var button = noticeForm.querySelector('button[type="submit"]');
+                    var message = noticeForm.querySelector('textarea[name="message"]').value;
+                    var type = noticeForm.querySelector('select[name="type"]').value;
+                    busy(button, true, 'Đang gửi...');
+                    postJson('Notice', { message: message, type: type }).then(function (result) {
+                        say(result.message || 'Không có phản hồi.', !result.ok);
+                        if (result.ok) noticeForm.querySelector('textarea[name="message"]').value = '';
+                    }).catch(function () {
+                        say('Không gửi được yêu cầu (lỗi mạng/server).', true);
+                    }).then(function () { busy(button, false); });
+                });
+            }
+
+            // ----- kiểm tra trạng thái online
+            var stateButton = document.getElementById('live-check-state');
+            var stateInput = document.getElementById('live-user-id');
+            var stateResult = document.getElementById('live-state-result');
+            if (stateButton && stateInput) {
+                var checkState = function () {
+                    var userId = stateInput.value.trim();
+                    if (!userId) { if (stateResult) stateResult.textContent = 'Nhập UserID trước.'; return; }
+                    if (stateResult) stateResult.textContent = 'Đang hỏi CenterService...';
+                    busy(stateButton, true, 'Đang kiểm tra...');
+                    getJson('/ServerLive?handler=PlayerState&userId=' + encodeURIComponent(userId))
+                        .then(function (result) {
+                            if (!result.ok) {
+                                if (stateResult) stateResult.textContent = result.message || 'Không kiểm tra được.';
+                                return;
+                            }
+                            var text = (result.nick ? result.nick + ': ' : '') +
+                                'CenterService → ' + result.message +
+                                ' (mã ' + result.centerState + ') · DB State = ' + result.dbState;
+                            if (stateResult) stateResult.textContent = text;
+                        })
+                        .catch(function () {
+                            if (stateResult) stateResult.textContent = 'Không gửi được yêu cầu (lỗi mạng/server).';
+                        })
+                        .then(function () { busy(stateButton, false); });
+                };
+                stateButton.addEventListener('click', checkState);
+                stateInput.addEventListener('keydown', function (event) {
+                    if (event.key === 'Enter') { event.preventDefault(); checkState(); }
+                });
+            }
+
+            // ----- kick
+            var kickButtons = root.querySelectorAll('[data-kick-id]');
+            Array.prototype.forEach.call(kickButtons, function (button) {
+                button.addEventListener('click', function () {
+                    var userId = button.getAttribute('data-kick-id');
+                    var nick = button.getAttribute('data-kick-nick') || ('UserID ' + userId);
+                    if (!confirm('Kick ' + nick + ' (UserID ' + userId + ') khỏi game?\nNgười chơi sẽ bị ngắt kết nối ngay.')) return;
+                    busy(button, true, 'Đang kick...');
+                    postJson('Kick', { userId: userId, reason: 'Bạn đã bị GM kick khỏi game.' }).then(function (result) {
+                        say(result.message || 'Không có phản hồi.', !result.ok);
+                        if (result.ok) window.setTimeout(function () { window.location.reload(); }, 1200);
+                    }).catch(function () {
+                        say('Không gửi được yêu cầu (lỗi mạng/server).', true);
+                    }).then(function () { busy(button, false); });
+                });
+            });
+
+            // ----- reload manager
+            var reloadForm = document.getElementById('live-reload-form');
+            if (reloadForm) {
+                reloadForm.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    var button = reloadForm.querySelector('button[type="submit"]');
+                    var type = reloadForm.querySelector('select[name="type"]').value;
+                    if (!confirm('Reload "' + type + '" trên tất cả Road đang kết nối?\nCó thể treo vài giây với server đông người.')) return;
+                    busy(button, true, 'Đang reload...');
+                    postJson('Reload', { type: type }).then(function (result) {
+                        say(result.message || 'Không có phản hồi.', !result.ok);
+                    }).catch(function () {
+                        say('Không gửi được yêu cầu (lỗi mạng/server).', true);
+                    }).then(function () { busy(button, false); });
+                });
+            }
+
+            // ----- reload server list
+            var serverListButton = document.getElementById('live-reload-serverlist');
+            if (serverListButton) {
+                serverListButton.addEventListener('click', function () {
+                    if (!confirm('Reload danh sách server từ DB?')) return;
+                    busy(serverListButton, true, 'Đang reload...');
+                    postJson('ReloadServerList', {}).then(function (result) {
+                        say(result.message || 'Không có phản hồi.', !result.ok);
+                    }).catch(function () {
+                        say('Không gửi được yêu cầu (lỗi mạng/server).', true);
+                    }).then(function () { busy(serverListButton, false); });
+                });
+            }
+
+            // ----- shutdown (2 lớp)
+            var shutdownForm = document.getElementById('live-shutdown-form');
+            if (shutdownForm) {
+                shutdownForm.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    var button = shutdownForm.querySelector('button[type="submit"]');
+                    var zoneId = shutdownForm.querySelector('input[name="zoneId"]').value;
+                    var confirmText = shutdownForm.querySelector('input[name="confirmText"]').value;
+                    if (!confirm('SHUTDOWN zone ' + zoneId + '? Người chơi sẽ bị ngắt kết nối.')) return;
+                    busy(button, true, 'Đang gửi...');
+                    postJson('Shutdown', { zoneId: zoneId, confirmText: confirmText }).then(function (result) {
+                        say(result.message || 'Không có phản hồi.', !result.ok);
+                    }).catch(function () {
+                        say('Không gửi được yêu cầu (lỗi mạng/server).', true);
+                    }).then(function () { busy(button, false); });
+                });
+            }
+
+            // ----- chat
+            var chatButton = document.getElementById('live-chat-refresh');
+            var chatList = document.getElementById('live-chat-list');
+            var chatMessage = document.getElementById('live-chat-message');
+            if (chatButton && chatList) {
+                chatButton.addEventListener('click', function () {
+                    busy(chatButton, true, 'Đang tải...');
+                    getJson('/ServerLive?handler=Chat').then(function (result) {
+                        if (chatMessage) chatMessage.textContent = result.message || '';
+                        if (!result.ok) { say(result.message || 'Không tải được chat.', true); return; }
+                        chatList.innerHTML = '';
+                        var chats = result.chats || [];
+                        if (chats.length === 0) {
+                            var empty = document.createElement('div');
+                            empty.className = 'chat-empty';
+                            empty.textContent = 'Chưa có dòng chat nào trong bộ đệm của CenterService.';
+                            chatList.appendChild(empty);
+                            return;
+                        }
+                        chats.forEach(function (chat) {
+                            var item = document.createElement('div');
+                            item.className = 'chat-item';
+                            var meta = document.createElement('div');
+                            meta.className = 'chat-meta';
+                            var time = document.createElement('span');
+                            time.className = 'mono';
+                            time.textContent = chat.time;
+                            var nick = document.createElement('b');
+                            nick.textContent = chat.nick;
+                            var extra = document.createElement('span');
+                            extra.className = 'muted small';
+                            extra.textContent = 'type ' + chat.type + ' · zone ' + chat.zone;
+                            meta.appendChild(time);
+                            meta.appendChild(nick);
+                            meta.appendChild(extra);
+                            var msg = document.createElement('div');
+                            msg.className = 'chat-msg';
+                            msg.textContent = chat.message;
+                            item.appendChild(meta);
+                            item.appendChild(msg);
+                            chatList.appendChild(item);
+                        });
+                    }).catch(function () {
+                        say('Không tải được chat (lỗi mạng/server).', true);
+                    }).then(function () { busy(chatButton, false); });
+                });
+            }
+        })();
+    </script>
+}

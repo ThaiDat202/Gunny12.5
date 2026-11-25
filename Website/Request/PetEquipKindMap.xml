@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Bảng DesignRow -> Pet KindID cho TRANG BỊ PET (Q6..Q9).
+  DesignRow = TemplateID % 1000 (101..136). Ví dụ:
+    30105, 140105, 150105, 160105 (Gậy Như Ý các cấp) -> DesignRow 105 -> KindID 11 (Tôn Ngộ Không)
+  Server dùng bảng này để chặn trang bị khác loài pet NGAY CẢ KHI trang bị chưa có record
+  thức tỉnh (Pet_Equip_Awake_Data) — trước đây các món chưa thức tỉnh bị thả tự do.
+
+  Nguồn xác định (dữ liệu chuẩn rip từ request server VNG quest.gn.zing.vn, 11/2026):
+   - Dòng 101..108: bộ trang bị gốc, khớp quy ước chữ số cuối TemplateID và khớp bảng đá
+     thức tỉnh 12594..12599, 12601 (cột Property2 = KindID).
+   - Dòng 109..136: tên vật phẩm ghi rõ loài pet (vd "Vũ Khí Rùa Thức Tỉnh" -> Huyền Vũ,
+     "Vũ Khí Bạch Diệm Thánh Hổ" -> kind 32, "Vũ Khí Quỷ Vương" -> kind 35, ...).
+   - Dòng 112 ("Tiểu Yêu"): chưa xác định chắc chắn loài -> không khai báo để tránh chặn nhầm.
+
+  Sửa file này rồi khởi động lại Road.Service là áp dụng (không cần build lại).
+-->
+<PetEquipKindMap>
+  <!-- ===== Dòng 101..108: bộ trang bị gốc ===== -->
+  <Item DesignRow="101" KindID="5"  PetName="Rồng Thần (Ấu Long Cổ)" Note="Vuốt Rồng - đá thức tỉnh 12594" />
+  <Item DesignRow="102" KindID="9"  PetName="Tuần Lộc"             Note="Sừng Noel - đá thức tỉnh 12597" />
+  <Item DesignRow="103" KindID="6"  PetName="Phụng Hoàng Băng"     Note="Đao Hàn Phong - đá thức tỉnh 12595" />
+  <Item DesignRow="104" KindID="7"  PetName="Kim Xà Vương"         Note="Răng Cuồng Bạo - đá thức tỉnh 12596" />
+  <Item DesignRow="105" KindID="11" PetName="Tôn Ngộ Không"        Note="Gậy Như Ý - đá thức tỉnh 12599" />
+  <Item DesignRow="106" KindID="10" PetName="Xanh Biếc"            Note="Bao Tay Yoyo - đá thức tỉnh 12598" />
+  <Item DesignRow="107" KindID="12" PetName="Đại Sư Kungfu"        Note="Tử Điện - đá thức tỉnh 12601" />
+  <Item DesignRow="108" KindID="15" PetName="Hỏa Khuyển"           Note="Lửa Hỏa Khuyển" />
+
+  <!-- ===== Dòng 109..130: trang bị theo từng loài pet ===== -->
+  <Item DesignRow="109" KindID="18" PetName="Huyền Vũ"             Note="... Rùa Thức Tỉnh" />
+  <Item DesignRow="110" KindID="2"  PetName="Kiến Xanh Nhỏ"        Note="... Kiến Lam Thức Tỉnh" />
+  <Item DesignRow="111" KindID="19" PetName="Kiến Lửa Nhỏ"         Note="... Kiến Đỏ Thức Tỉnh" />
+  <!-- Dòng 112 (Tiểu Yêu): chưa xác định loài - bỏ trống -->
+  <Item DesignRow="113" KindID="1"  PetName="Gà Con"               Note="... Gà Con Thức Tỉnh" />
+  <Item DesignRow="114" KindID="20" PetName="Gà Con Hung Dữ"       Note="... Gà Hung Dữ Thức Tỉnh" />
+  <Item DesignRow="115" KindID="3"  PetName="Đấu Sĩ"               Note="... Thức Tỉnh Đấu Sĩ" />
+  <Item DesignRow="116" KindID="22" PetName="Đấu Sĩ Hiếm"          Note="... Thức Tỉnh Đấu Sĩ Hiếm" />
+  <Item DesignRow="117" KindID="4"  PetName="Mầm Xanh"             Note="... Mầm Xanh Thức Tỉnh" />
+  <Item DesignRow="118" KindID="23" PetName="Mầm Xanh Lấp Lánh"    Note="... Mầm Xanh Lấp Lánh Thức Tỉnh" />
+  <Item DesignRow="119" KindID="14" PetName="Pet Hắc Ám"           Note="... Thức Tỉnh Hắc Ám" />
+  <Item DesignRow="120" KindID="24" PetName="Phượng Hoàng Lửa"     Note="... Phượng Hoàng" />
+  <Item DesignRow="121" KindID="25" PetName="Chuột Thợ Mỏ"        Note="... Chuột Thợ Mỏ" />
+  <Item DesignRow="122" KindID="27" PetName="Rồng Băng Giá"        Note="... Rồng Băng Giá" />
+  <Item DesignRow="123" KindID="13" PetName="Kungfu Đại Hiệp"      Note="... Gà Đại Hiệp" />
+  <Item DesignRow="124" KindID="26" PetName="Thỏ Ngọc"             Note="... Thỏ Ngọc" />
+  <Item DesignRow="125" KindID="17" PetName="Tiểu Hồ Ly"           Note="... Tiểu Hồ Ly" />
+  <Item DesignRow="126" KindID="32" PetName="Bạch Diệm Thánh Hổ"   Note="... Bạch Diệm Thánh Hổ" />
+  <Item DesignRow="127" KindID="33" PetName="Ám Viêm Ma Hổ"        Note="... Ám Viêm Ma Hổ" />
+  <Item DesignRow="128" KindID="28" PetName="Thiên Sứ Bóng Tối"   Note="... Thiên Sứ Bóng Tối" />
+  <Item DesignRow="129" KindID="29" PetName="Thiên Sứ Ánh Sáng"   Note="... Thiên Sứ Ánh Sáng" />
+  <Item DesignRow="130" KindID="34" PetName="Quàng Thượng"         Note="... Quàng Thượng" />
+
+  <!-- ===== Dòng 131..136: pet mới (dữ liệu chuẩn 11/2026) ===== -->
+  <Item DesignRow="131" KindID="35" PetName="Quỷ Vương"           Note="... Quỷ Vương" />
+  <Item DesignRow="132" KindID="36" PetName="Ngôi Sao Ngân Hà"    Note="... Ngôi Sao Ngân Hà" />
+  <Item DesignRow="133" KindID="37" PetName="Thanh Long"          Note="... Thanh Long" />
+  <Item DesignRow="134" KindID="16" PetName="Băng Khuyển"         Note="... Hỏa Khuyển Nhỏ / Lửa Băng Khuyển" />
+  <Item DesignRow="135" KindID="38" PetName="Tinh Linh Sao"       Note="... Tinh Linh Sao" />
+  <Item DesignRow="136" KindID="39" PetName="Thánh Giác Thú"      Note="... Thánh Giác Thú" />
+</PetEquipKindMap>

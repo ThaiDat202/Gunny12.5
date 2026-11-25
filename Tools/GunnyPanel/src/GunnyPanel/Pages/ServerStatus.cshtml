@@ -1,0 +1,106 @@
+@page "/Server"
+@model GunnyPanel.Pages.ServerStatusModel
+@{
+    ViewData["Title"] = "Trạng thái server";
+    ViewData["Subtitle"] = "Cổng dịch vụ, database, nguồn dữ liệu và cấu hình Road.Service — chỉ đọc";
+}
+
+@if (!string.IsNullOrEmpty(Model.Error))
+{
+    <div class="alert danger">@Model.Error</div>
+}
+
+<div class="grid two">
+    <section class="card">
+        <h2>Kết nối &amp; cổng dịch vụ</h2>
+        <table class="mini">
+            <tr><td><b>SQL Server</b></td><td class="mono small">@Model.SqlVersion</td></tr>
+            @foreach (var port in Model.Ports)
+            {
+                <tr>
+                    <td><b>@port.Name</b></td>
+                    <td class="mono">127.0.0.1:@port.Port</td>
+                    <td class="@(port.Ok ? "ok" : "bad")">@(port.Ok ? "● " + port.Info : "○ " + port.Info)</td>
+                </tr>
+            }
+        </table>
+        <p class="muted small">Port 8527/1593/7539 lấy từ <code>Road.Service.exe.config</code>; nếu service tắt thì hiện "○".</p>
+    </section>
+
+    <section class="card">
+        <h2>Database</h2>
+        <table class="mini">
+            @foreach (var db in Model.DbSizes)
+            {
+                <tr><td><b>@db.Db</b></td><td class="mono">@db.SizeMb MB</td></tr>
+            }
+        </table>
+        <table class="mini" style="margin-top:10px;">
+            <tr><td><b>Người chơi</b></td><td class="mono">@Model.UsersCount</td></tr>
+            <tr><td><b>Online</b></td><td class="mono">@Model.OnlineCount</td></tr>
+            <tr><td><b>Vật phẩm (Sys_Users_Goods)</b></td><td class="mono">@Model.GoodsCount</td></tr>
+            <tr><td><b>Guild</b></td><td class="mono">@Model.GuildCount</td></tr>
+        </table>
+    </section>
+</div>
+
+<div class="grid two">
+    <section class="card">
+        <h2>Nguồn dữ liệu VNG</h2>
+        <table class="mini">
+            @foreach (var vng in Model.Vng)
+            {
+                <tr>
+                    <td><b>@vng.Name</b></td>
+                    <td class="@(vng.Ok ? "ok" : "bad")">@(vng.Ok ? "OK" : "Lỗi")</td>
+                    <td class="mono small">@vng.Info</td>
+                </tr>
+            }
+        </table>
+        <p class="muted small mono">@string.Join(" · ", Model.Vng.Select(v => v.Url))</p>
+    </section>
+
+    <section class="card">
+        <h2>Cấu hình Road.Service (chỉ đọc file)</h2>
+        @if (Model.RoadConfig.Count == 0)
+        {
+            <p class="muted">Không đọc được <code>Road.Service.exe.config</code>.</p>
+        }
+        else
+        {
+            <table class="mini">
+                @foreach (var item in Model.RoadConfig)
+                {
+                    <tr><td><b>@item.Key</b></td><td class="mono small">@item.Value</td></tr>
+                }
+            </table>
+        }
+    </section>
+</div>
+
+<div class="grid two">
+    <section class="card">
+        <h2>Dữ liệu local</h2>
+        <table class="mini">
+            <tr><td><b>XML mirror</b></td><td class="mono">@Model.XmlCount file · @Model.XmlSize</td></tr>
+            <tr><td><b>Flash (WebSite)</b></td><td class="mono">@Model.FlashCount file · @Model.FlashSize</td></tr>
+            <tr><td><b>File SQL (dry-run)</b></td><td class="mono">@Model.SqlFiles</td></tr>
+            <tr><td><b>Bomb PNG / .bomb xuất</b></td><td class="mono">@Model.BombPng / @Model.BombFiles</td></tr>
+            <tr><td><b>Data dir</b></td><td class="mono small">@Model.DataPath</td></tr>
+        </table>
+    </section>
+
+    <section class="card">
+        <h2>Jobs</h2>
+        <table class="mini">
+            <tr><td><b>Tổng số</b></td><td class="mono">@Model.JobsTotal</td></tr>
+            <tr><td><b>Đang chờ / chạy</b></td><td class="mono">@Model.JobsRunning</td></tr>
+            <tr><td><b>Thất bại</b></td><td class="mono">@Model.JobsFailed</td></tr>
+        </table>
+        <div class="row gap" style="margin-top:12px;">
+            <a class="btn small" href="/Jobs">Mở Jobs &amp; Tools</a>
+            <a class="btn small" href="/Audit">Xem Audit log</a>
+        </div>
+        <p class="muted small" style="margin-top:10px;">Trang này chỉ SELECT/hiển thị, không thay đổi dữ liệu server.</p>
+    </section>
+</div>

@@ -1,0 +1,14 @@
+C:\Gunny\Gunny12.5\Full Source\SqlDataProvider\bin\Release\net472\SqlDataProvider.dll
+C:\Gunny\Gunny12.5\Full Source\SqlDataProvider\bin\Release\net472\SqlDataProvider.pdb
+C:\Gunny\Gunny12.5\Full Source\SqlDataProvider\bin\Release\net472\EntityFramework.SqlServer.dll
+C:\Gunny\Gunny12.5\Full Source\SqlDataProvider\bin\Release\net472\EntityFramework.dll
+C:\Gunny\Gunny12.5\Full Source\SqlDataProvider\bin\Release\net472\Newtonsoft.Json.dll
+C:\Gunny\Gunny12.5\Full Source\SqlDataProvider\bin\Release\net472\protobuf-net.dll
+C:\Gunny\Gunny12.5\Full Source\SqlDataProvider\bin\Release\net472\EntityDatabase.dll
+C:\Gunny\Gunny12.5\Full Source\SqlDataProvider\bin\Release\net472\EntityDatabase.pdb
+C:\Gunny\Gunny12.5\Full Source\SqlDataProvider\obj\Release\net472\SqlDataProvider.csproj.AssemblyReference.cache
+C:\Gunny\Gunny12.5\Full Source\SqlDataProvider\obj\Release\net472\SqlDataProvider.GeneratedMSBuildEditorConfig.editorconfig
+C:\Gunny\Gunny12.5\Full Source\SqlDataProvider\obj\Release\net472\SqlDataProvider.csproj.CoreCompileInputs.cache
+C:\Gunny\Gunny12.5\Full Source\SqlDataProvider\obj\Release\net472\SqlDataP.F5CDDF18.Up2Date
+C:\Gunny\Gunny12.5\Full Source\SqlDataProvider\obj\Release\net472\SqlDataProvider.dll
+C:\Gunny\Gunny12.5\Full Source\SqlDataProvider\obj\Release\net472\SqlDataProvider.pdb

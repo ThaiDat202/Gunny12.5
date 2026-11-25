@@ -1,0 +1,18 @@
+﻿uiA preview exercise - 2026-11-09 18:39:59
+Rip+Promote button: found
+rip finished: True
+exercise-rip-after-run -> C:\Gunny\ToolGunny\GunnyRequestStudio\_dev\uiA\shots\exercise-rip-after-run.png | form=1440x900 | page=Rip Request | pageSize=1182x792
+grid rows: 4
+stat cards: OK=4 | Không đổi=0 | 404=0 | Lỗi=0 | Dung lượng=177 B
+Test DB button: found
+exercise-settings-db -> C:\Gunny\ToolGunny\GunnyRequestStudio\_dev\uiA\shots\exercise-settings-db.png | form=1440x900 | page=Cài đặt | pageSize=1182x792
+db state: ✓ Ket noi OK: Microsoft SQL Server 2025 (RTM) - 17.0.1000.7 (X64)
+settings scroll panel: found
+exercise-settings-bottom -> C:\Gunny\ToolGunny\GunnyRequestStudio\_dev\uiA\shots\exercise-settings-bottom.png | form=1440x900 | page=Cài đặt | pageSize=1182x792
+Save button: found
+exercise-settings-saved -> C:\Gunny\ToolGunny\GunnyRequestStudio\_dev\uiA\shots\exercise-settings-saved.png | form=1440x900 | page=Cài đặt | pageSize=1182x792
+save state: Đã lưu lúc 18:40:28
+Refresh button: found
+exercise-dashboard-refresh -> C:\Gunny\ToolGunny\GunnyRequestStudio\_dev\uiA\shots\exercise-dashboard-refresh.png | form=1440x900 | page=Tổng quan | pageSize=1182x792
+dashboard stats: File request=4 | Bản mirror=4 | Template map được=0 | Bảng CSDL=415 | File bomb mask=2,296
+EXERCISE OK

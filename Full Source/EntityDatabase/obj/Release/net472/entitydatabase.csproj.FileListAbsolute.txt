@@ -1,0 +1,10 @@
+C:\Gunny\Gunny12.5\Full Source\EntityDatabase\bin\Release\net472\EntityDatabase.dll
+C:\Gunny\Gunny12.5\Full Source\EntityDatabase\bin\Release\net472\EntityDatabase.pdb
+C:\Gunny\Gunny12.5\Full Source\EntityDatabase\bin\Release\net472\EntityFramework.SqlServer.dll
+C:\Gunny\Gunny12.5\Full Source\EntityDatabase\bin\Release\net472\EntityFramework.dll
+C:\Gunny\Gunny12.5\Full Source\EntityDatabase\obj\Release\net472\EntityDatabase.csproj.AssemblyReference.cache
+C:\Gunny\Gunny12.5\Full Source\EntityDatabase\obj\Release\net472\EntityDatabase.GeneratedMSBuildEditorConfig.editorconfig
+C:\Gunny\Gunny12.5\Full Source\EntityDatabase\obj\Release\net472\EntityDatabase.csproj.CoreCompileInputs.cache
+C:\Gunny\Gunny12.5\Full Source\EntityDatabase\obj\Release\net472\EntityDatabase.dll
+C:\Gunny\Gunny12.5\Full Source\EntityDatabase\obj\Release\net472\EntityDatabase.pdb
+C:\Gunny\Gunny12.5\Full Source\entitydatabase\obj\Release\net472\entityda.B6A243F4.Up2Date

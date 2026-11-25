@@ -1,0 +1,1123 @@
+@page "/Users/Details"
+@model GunnyPanel.Pages.UserDetailModel
+@{
+    ViewData["Title"] = "Chi tiết người dùng";
+    ViewData["Subtitle"] = "Thông tin tài khoản, level, vật phẩm và thao tác quản trị";
+}
+
+@if (!string.IsNullOrEmpty(Model.Error))
+{
+    <div class="alert danger">@Model.Error</div>
+    <a class="btn" href="/Users">‹ Về danh sách</a>
+}
+else if (Model.Account != null)
+{
+    var u = Model.Account;
+    <div class="page-head">
+        <h2>@u.NickName <span class="muted small">(@u.UserName · ID @u.UserID)</span></h2>
+        <div class="row gap" style="margin-top:0;">
+            <span class="badge-ok"><i class="fa fa-lock"></i> Đọc + thao tác có xác nhận</span>
+            <a class="btn small" href="/Users">‹ Về danh sách</a>
+        </div>
+    </div>
+
+    <div class="grid two">
+        <section class="card">
+            <h2>Thông tin tài khoản</h2>
+            <table class="mini">
+                <tr><td><b>Tài khoản</b></td><td>@u.UserName</td></tr>
+                <tr><td><b>NickName</b></td><td>@u.NickName</td></tr>
+                <tr><td><b>Giới tính</b></td><td>@(u.Sex ? "♂ Nam" : "♀ Nữ")</td></tr>
+                <tr><td><b>Level</b></td><td class="mono">@u.Grade</td></tr>
+                <tr>
+                    <td><b>Lực chiến</b></td>
+                    <td class="mono">
+                        @Model.DisplayFightPower.ToString("N0")
+                        @if (Model.LiveStats != null) { <span class="muted small">(live)</span> }
+                    </td>
+                </tr>
+                @if (Model.LiveStats != null)
+                {
+                    <tr><td colspan="2" class="muted small" style="padding-top:8px;"><b>Chỉ số chiến đấu (live)</b></td></tr>
+                    <tr><td><b>Tấn công</b></td><td class="mono">@Model.LiveStats.Attack.ToString("N0")</td></tr>
+                    <tr><td><b>Phòng thủ</b></td><td class="mono">@Model.LiveStats.Defence.ToString("N0")</td></tr>
+                    <tr><td><b>Nhanh nhẹn</b></td><td class="mono">@Model.LiveStats.Agility.ToString("N0")</td></tr>
+                    <tr><td><b>May mắn</b></td><td class="mono">@Model.LiveStats.Luck.ToString("N0")</td></tr>
+                    <tr><td><b>Máu</b></td><td class="mono">@Model.LiveStats.Hp.ToString("N0")</td></tr>
+                    <tr><td><b>Ma công</b></td><td class="mono">@Model.LiveStats.MagicAttack.ToString("N0")</td></tr>
+                    <tr><td><b>Ma kháng</b></td><td class="mono">@Model.LiveStats.MagicDefence.ToString("N0")</td></tr>
+                    <tr><td><b>Sát thương</b></td><td class="mono">@Model.LiveStats.Damage.ToString("N0")</td></tr>
+                    <tr><td><b>Thể lực</b></td><td class="mono">@Model.LiveStats.Energy.ToString("N0")</td></tr>
+                }
+                else if (u.State > 0)
+                {
+                    <tr><td colspan="2" class="muted small" style="padding-top:8px;">Chỉ số chiến đấu live: đang chờ Road GM API (bản Road mới).</td></tr>
+                }
+                <tr><td><b>GP</b></td><td class="mono">@u.GP.ToString("N0")</td></tr>
+                <tr><td><b>Xu</b></td><td class="mono">@u.Money.ToString("N0")</td></tr>
+                <tr><td><b>Vàng</b></td><td class="mono">@u.Gold.ToString("N0")</td></tr>
+                <tr><td><b>Email</b></td><td>@(string.IsNullOrWhiteSpace(u.Email) ? "—" : u.Email)</td></tr>
+                <tr>
+                    <td><b>Trạng thái</b></td>
+                    <td>
+                        @(u.State > 0 ? Html.Raw("<span class=\"state-pill online\">Online</span>") : Html.Raw("<span class=\"state-pill offline\">Offline</span>"))
+                        <button type="button" class="btn small" id="live-state-check" data-user-id="@u.UserID"><i class="fa fa-bolt"></i> Kiểm tra live</button>
+                        <div class="muted small" id="live-state-result"></div>
+                    </td>
+                </tr>
+                <tr><td><b>Lần cuối</b></td><td class="mono">@u.LastDate</td></tr>
+                <tr><td><b>Ngày tạo</b></td><td class="mono">@Get("Date")</td></tr>
+                <tr><td><b>Guild</b></td><td>@(string.IsNullOrWhiteSpace(Model.GuildName) ? (u.ConsortiaID > 0 ? "ID " + u.ConsortiaID : "—") : Model.GuildName)</td></tr>
+                <tr><td><b>Hôn nhân</b></td><td>@(Get("IsMarried") == "True" || Get("IsMarried") == "1" ? "Đã kết hôn" : "Độc thân")</td></tr>
+            </table>
+        </section>
+
+        <section class="card">
+            <h2>Trạng thái khác (chỉ đọc)</h2>
+            <table class="mini">
+                <tr><td><b>Điểm thành tựu</b></td><td class="mono">@Get("AchievementPoint")</td></tr>
+                <tr><td><b>VipIntegral</b></td><td class="mono">@Get("VipIntegral")</td></tr>
+                <tr><td><b>Số lần đăng nhập</b></td><td class="mono">@Get("LoginCount")</td></tr>
+                <tr><td><b>OnlineTime</b></td><td class="mono">@Get("OnlineTime")</td></tr>
+                <tr><td><b>ChargeDate</b></td><td class="mono">@Get("ChargeDate")</td></tr>
+                <tr><td><b>Ban chat</b></td><td>@(Get("IsBanChat") == "True" || Get("IsBanChat") == "1" ? "Bị cấm chat" : "Bình thường")</td></tr>
+                <tr><td><b>Hết cấm chat</b></td><td class="mono">@Get("BanChatEndDate")</td></tr>
+                <tr><td><b>ForbidDate</b></td><td class="mono">@Get("ForbidDate")</td></tr>
+                <tr><td><b>Lý do khóa</b></td><td>@Get("ForbidReason")</td></tr>
+                <tr><td><b>Mật khẩu cấp 2</b></td><td class="mono">@(string.IsNullOrWhiteSpace(Get("PasswordTwo")) ? "—" : "••••••")</td></tr>
+            </table>
+            <p class="muted small">Kick dùng <b>CenterService</b> (WCF/API có sẵn của Gunny — không sửa Full Source/Service); ban/unban và sửa tiền/level dùng khung “Thao tác quản trị” bên dưới.</p>
+        </section>
+    </div>
+
+    @if (Model.CanWrite)
+    {
+        <section class="card" id="admin-actions">
+            <h2>Thao tác quản trị (admin / gm)</h2>
+            @Html.AntiForgeryToken()
+            <div class="alert info">
+                ⚠ <b>Trước khi sửa tiền / vàng / GP / level:</b> hãy cho nhân vật <b>offline (đăng xuất game)</b>.
+                Nếu nhân vật đang online, panel sẽ <b>từ chối</b> sửa để tránh bị server ghi đè dữ liệu.
+                Nếu đang online, dùng nút <b>Kick</b> (CenterService) rồi chờ vài giây trước khi sửa.
+                Ban khi đang online có hiệu lực khi người chơi đăng nhập lại.
+            </div>
+
+            @if (u.State > 0)
+            {
+                <div class="alert danger">Nhân vật hiện đang <b>Online</b> — không thể sửa tiền/level. Hãy <b>Kick</b> (bên dưới) hoặc cho offline trước.</div>
+            }
+
+            <div class="admin-grid">
+                <div>
+                    <h3 style="font-size:14px;margin:6px 0 8px;">Ban / Unban</h3>
+                    <form method="post" asp-page-handler="Ban">
+                        <input type="hidden" name="id" value="@u.UserID" />
+                        <label>Số ngày ban</label>
+                        <input type="number" name="days" value="7" min="1" max="3650" />
+                        <label>Lý do</label>
+                        <input name="reason" placeholder="Vi phạm điều khoản..." maxlength="1000" />
+                        <label>Nhập lại NickName để xác nhận</label>
+                        <input name="confirmNick" placeholder="@u.NickName" autocomplete="off" />
+                        <button type="submit" class="btn danger"><i class="fa fa-lock"></i> Ban tài khoản</button>
+                    </form>
+
+                    <form method="post" asp-page-handler="Unban" style="margin-top:14px;">
+                        <input type="hidden" name="id" value="@u.UserID" />
+                        <label>Mở ban — nhập lại NickName</label>
+                        <input name="confirmNick" placeholder="@u.NickName" autocomplete="off" />
+                        <button type="submit" class="btn primary"><i class="fa fa-lock"></i> Unban tài khoản</button>
+                    </form>
+
+                    <h3 style="font-size:14px;margin:18px 0 8px;">Kick (CenterService)</h3>
+                    <div class="row gap" style="flex-wrap:wrap;">
+                        <input id="kick-reason" placeholder="Lý do (không bắt buộc)" maxlength="200" style="flex:1;min-width:150px;" />
+                        <button type="button" class="btn danger" id="kick-user" data-user-id="@u.UserID" data-nick="@u.NickName"><i class="fa fa-signout"></i> Kick</button>
+                    </div>
+                    <div class="muted small" id="kick-result" style="margin-top:6px;">
+                        Ngắt kết nối người chơi đang online (<code>CenterService.KitoffUser</code> — API có sẵn, không sửa Service);
+                        audit ghi <code>road.kick</code>. Kick xong chờ vài giây rồi mới sửa tiền/level.
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="font-size:14px;margin:6px 0 8px;">Sửa tiền tệ / level</h3>
+                    <form method="post" asp-page-handler="Edit">
+                        <input type="hidden" name="id" value="@u.UserID" />
+                        <div class="field-grid">
+                            <div>
+                                <label>Xu (Money)</label>
+                                <input type="number" name="money" value="@u.Money" min="0" max="2147483647" />
+                            </div>
+                            <div>
+                                <label>Vàng (Gold)</label>
+                                <input type="number" name="gold" value="@u.Gold" min="0" max="2147483647" />
+                            </div>
+                            <div>
+                                <label>Xu khóa (GiftToken)</label>
+                                <input type="number" name="giftToken" value="@Model.Info.GetValueOrDefault("GiftToken")" min="0" max="2147483647" />
+                            </div>
+                            <div>
+                                <label>Level (tối đa 70)</label>
+                                <input type="number" name="grade" value="@u.Grade" min="1" max="70" />
+                            </div>
+                        </div>
+                        <label>Nhập lại NickName để xác nhận</label>
+                        <input name="confirmNick" placeholder="@u.NickName" autocomplete="off" />
+                        <button type="submit" class="btn primary"><i class="fa fa-refresh"></i> Cập nhật dữ liệu</button>
+                    </form>
+                    <p class="muted small">Xu/Vàng/Xu khóa tối đa 2,147,483,647; Level chỉ sửa trong khoảng 1–70. Audit ghi lại giá trị cũ → mới.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Cấm chat &amp; thư tùy chỉnh</h2>
+            <div class="alert info">
+                <b>Ban chat</b> ghi <code>IsBanChat</code> / <code>BanChatEndDate</code> — có hiệu lực khi người chơi
+                <b>đăng nhập lại</b> (hoặc dùng Kick ở trên). <b>Gửi thư tùy chỉnh</b> ghi thẳng hộp thư
+                (<code>User_Messages</code>) và có thể kèm Vàng / Xu / Xu khóa — <b>không kèm vật phẩm</b>
+                (dùng Award nếu cần gửi item). Cả hai đều bắt nhập lại NickName và ghi audit.
+            </div>
+            <div class="admin-grid">
+                <div>
+                    <h3 style="font-size:14px;margin:6px 0 8px;">Ban chat</h3>
+                    <form method="post" asp-page-handler="BanChat">
+                        <input type="hidden" name="id" value="@u.UserID" />
+                        <label>Số ngày cấm chat</label>
+                        <input type="number" name="days" value="7" min="1" max="3650" />
+                        <label>Lý do (ghi audit)</label>
+                        <input name="reason" placeholder="Spam chat, xúc phạm..." maxlength="500" />
+                        <label>Nhập lại NickName để xác nhận</label>
+                        <input name="confirmNick" placeholder="@u.NickName" autocomplete="off" />
+                        <button type="submit" class="btn danger"><i class="fa fa-comment-slash"></i> Cấm chat</button>
+                    </form>
+
+                    <form method="post" asp-page-handler="UnbanChat" style="margin-top:14px;">
+                        <input type="hidden" name="id" value="@u.UserID" />
+                        <label>Mở ban chat — nhập lại NickName</label>
+                        <input name="confirmNick" placeholder="@u.NickName" autocomplete="off" />
+                        <button type="submit" class="btn primary"><i class="fa fa-comment"></i> Mở ban chat</button>
+                    </form>
+                </div>
+
+                <div>
+                    <h3 style="font-size:14px;margin:6px 0 8px;">Gửi thư tùy chỉnh (không kèm item)</h3>
+                    <form method="post" asp-page-handler="SendMail">
+                        <input type="hidden" name="id" value="@u.UserID" />
+                        <label>Tiêu đề</label>
+                        <input name="title" value="Thư từ GM Panel" maxlength="500" />
+                        <label>Nội dung</label>
+                        <textarea name="content" rows="3" maxlength="4000" placeholder="Nội dung thư..."></textarea>
+                        <div class="field-grid">
+                            <div>
+                                <label>Vàng (Gold)</label>
+                                <input type="number" name="mailGold" value="0" min="0" max="2147483647" />
+                            </div>
+                            <div>
+                                <label>Xu (Money)</label>
+                                <input type="number" name="mailMoney" value="0" min="0" max="2147483647" />
+                            </div>
+                            <div>
+                                <label>Xu khóa (GiftToken)</label>
+                                <input type="number" name="mailGiftToken" value="0" min="0" max="2147483647" />
+                            </div>
+                        </div>
+                        <label>Nhập lại NickName để xác nhận</label>
+                        <input name="confirmNick" placeholder="@u.NickName" autocomplete="off" />
+                        <button type="submit" class="btn primary"><i class="fa fa-envelope"></i> Gửi thư</button>
+                    </form>
+                    <p class="muted small">Thư vào hộp thư ngay; nếu người chơi đang online, panel gọi MailNotice để client cập nhật.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="card award-card">
+            <h2>Gửi vật phẩm (Award qua hộp thư)</h2>
+            <div class="alert info">
+                Chọn <b>thể loại</b> → bấm <b>Hiện danh sách vật phẩm</b>.
+                Cửa sổ chọn item có <b>ảnh + phân trang</b>; bấm item để xem chi tiết, nhập số lượng / chỉ số / đúc vàng rồi Gửi.
+                <b>Gửi được cả khi nhân vật đang online</b> — item vào hộp thư ngay, người chơi mở hộp thư để nhận (không cần đăng nhập lại).
+                <b>Trang bên ngoài không reload</b>; chỉ cửa sổ chọn item tải lại khi đổi trang/chọn item.
+            </div>
+
+            <div class="field-grid">
+                <div>
+                    <label>Thể loại</label>
+                    <select id="award-cat">
+                        <option value="0">— Tất cả category —</option>
+                        @foreach (var cat in Model.Categories)
+                        {
+                            <option value="@cat.Id">@cat.Id — @cat.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row gap" style="margin-top:12px;">
+                <button type="button" class="btn primary" id="open-award-picker"><i class="fa fa-search"></i> Hiện danh sách vật phẩm</button>
+                <span class="muted small">Mở cửa sổ riêng; trang bên ngoài giữ nguyên trạng thái.</span>
+            </div>
+
+            @if (Model.Embed != 1)
+            {
+                <div class="modal-backdrop" id="award-picker-overlay" style="display:none;">
+                    <div class="modal-card award-modal" style="padding:0;overflow:hidden;">
+                        <div class="modal-head" style="margin:0;padding:12px 16px;border-bottom:1px solid var(--line-soft);">
+                            <h3>Chọn vật phẩm gửi về user</h3>
+                            <button type="button" class="btn small" id="close-award-picker">Đóng</button>
+                        </div>
+                        <iframe id="award-picker-frame" title="Chọn vật phẩm" style="width:100%;height:72vh;border:0;display:block;background:#fff;"></iframe>
+                    </div>
+                </div>
+            }
+
+            @if (Model.Picker == 1 && Model.Embed == 1)
+            {
+                <div class="modal-backdrop">
+                    <div class="modal-card award-modal">
+                        <div class="modal-head">
+                            <h3>Chọn vật phẩm — @(Model.Categories.FirstOrDefault(c => c.Id == Model.AwardCat)?.Name ?? "Tất cả category")</h3>
+                        </div>
+                        <form method="get" class="award-modal-search" id="award-picker-filter">
+                            <input type="hidden" name="id" value="@u.UserID" />
+                            <input type="hidden" name="cat" value="@Model.AwardCat" />
+                            <input type="hidden" name="picker" value="1" />
+                            @if (Model.Embed == 1)
+                            {
+                                <input type="hidden" name="embed" value="1" />
+                            }
+                            <label for="award-name-search">Tìm theo tên:</label>
+                            <input id="award-name-search" name="q" value="@Model.AwardQ" placeholder="vd: nhẫn, áo..." autocomplete="off" />
+                            <label for="award-id-search">TemplateID:</label>
+                            <input id="award-id-search" name="sel" type="number" min="1" inputmode="numeric" autocomplete="off"
+                                   placeholder="vd: 5101" value="@(Model.SelectedAward?.TemplateId)" />
+                            <button type="submit" class="btn small" id="award-id-go">Xem</button>
+                            <span class="muted small">Nhập tên hoặc TemplateID rồi bấm Xem.</span>
+                        </form>
+                        <div class="award-picker">
+                            <div class="award-picker-list">
+                                @if (Model.AwardItems.Count > 0)
+                                {
+                                    <div class="award-item-grid">
+                                        @foreach (var it in Model.AwardItems)
+                                        {
+                                            <a class="award-item @(Model.SelectedAward?.TemplateId == it.TemplateId ? "active" : null)" href="@Model.AwardSelectUrl(it.TemplateId)">
+                                                <span class="item-thumb">
+                                                    <i class="fa fa-cube"></i>
+                                                    @if (!string.IsNullOrWhiteSpace(it.ImageUrl))
+                                                    {
+                                                        <img src="@it.ImageUrl" alt="@it.Name" loading="lazy" onerror="this.remove();" />
+                                                    }
+                                                </span>
+                                                <span class="award-item-info">
+                                                    <b>@it.Name</b>
+                                                    <em>#@it.TemplateId · @it.CategoryName</em>
+                                                </span>
+                                            </a>
+                                        }
+                                    </div>
+                                    <div class="award-pager">
+                                        @if (Model.AwardPage > 1)
+                                        {
+                                            <a class="btn small" href="@Model.AwardPageUrl(Model.AwardPage - 1)">‹ Trước</a>
+                                        }
+                                        else
+                                        {
+                                            <span class="btn small disabled">‹ Trước</span>
+                                        }
+                                        <span class="muted small">Trang @Model.AwardPage / @Model.AwardTotalPages · @Model.AwardTotal item</span>
+                                        <form method="get" class="award-page-jump">
+                                            <input type="hidden" name="id" value="@u.UserID" />
+                                            <input type="hidden" name="cat" value="@Model.AwardCat" />
+                                            <input type="hidden" name="q" value="@Model.AwardQ" />
+                                            <input type="hidden" name="picker" value="1" />
+                                            @if (Model.Embed == 1)
+                                            {
+                                                <input type="hidden" name="embed" value="1" />
+                                            }
+                                            <label>Trang</label>
+                                            <input type="number" name="apage" id="award-page-input" min="1" max="@Model.AwardTotalPages" value="@Model.AwardPage" />
+                                            <button type="submit" class="btn small">Đi</button>
+                                        </form>
+                                        @if (Model.AwardPage < Model.AwardTotalPages)
+                                        {
+                                            <a class="btn small" href="@Model.AwardPageUrl(Model.AwardPage + 1)">Sau ›</a>
+                                        }
+                                        else
+                                        {
+                                            <span class="btn small disabled">Sau ›</span>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p class="muted">@(Model.AwardListMessage ?? "Không có item phù hợp. Thử thể loại khác.")</p>
+                                }
+                            </div>
+
+                            <div class="award-picker-detail">
+                                @if (!string.IsNullOrWhiteSpace(Model.AwardSelectMessage))
+                                {
+                                    <div class="alert danger">@Model.AwardSelectMessage</div>
+                                }
+                                @if (Model.SelectedAward != null)
+                                {
+                                    var sel = Model.SelectedAward;
+                                    <div class="award-detail-head">
+                                        <span class="item-thumb big">
+                                            <i class="fa fa-cube"></i>
+                                            @if (!string.IsNullOrWhiteSpace(sel.ImageUrl))
+                                            {
+                                                <img src="@sel.ImageUrl" alt="@sel.Name" onerror="this.remove();" />
+                                            }
+                                        </span>
+                                        <div>
+                                            <div class="award-detail-name">@sel.Name</div>
+                                            <div class="muted small">TemplateID @sel.TemplateId · @sel.CategoryName · Max stack @sel.MaxCount</div>
+                                        </div>
+                                    </div>
+
+                                    <form method="post" asp-page-handler="SendItem" id="award-send-form">
+                                        <input type="hidden" name="id" value="@u.UserID" />
+                                        <input type="hidden" name="templateId" value="@sel.TemplateId" />
+
+                                        <div class="field-grid">
+                                            <div>
+                                                <label>Số lượng (1–9999)</label>
+                                                <input type="number" name="count" value="1" min="1" max="9999" />
+                                            </div>
+                                            <div>
+                                                <label>Khóa (bind)</label>
+                                                <select name="bind">
+                                                    <option value="true">Có (bind)</option>
+                                                    <option value="false" selected>Không</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label>Hạn dùng (ngày, 0 = vĩnh viễn)</label>
+                                                <input type="number" name="validDays" value="0" min="0" max="3650" />
+                                            </div>
+                                        </div>
+
+                                        @if (sel.AllowStats)
+                                        {
+                                            <div class="row gap" style="margin:4px 0 6px; align-items:center;">
+                                                <label style="margin:0;">Cộng chỉ số (tối đa 50 mỗi chỉ số; để 0 nếu không cộng)</label>
+                                                <button type="button" class="btn small" id="award-max-stats"><i class="fa fa-bolt"></i> Cộng nhanh 4 chỉ số = 50</button>
+                                            </div>
+                                            <div class="field-grid">
+                                                <div>
+                                                    <label>Công</label>
+                                                    <input type="number" name="attack" value="0" min="0" max="50" />
+                                                </div>
+                                                <div>
+                                                    <label>Thủ</label>
+                                                    <input type="number" name="defend" value="0" min="0" max="50" />
+                                                </div>
+                                                <div>
+                                                    <label>Nhanh nhẹn</label>
+                                                    <input type="number" name="agility" value="0" min="0" max="50" />
+                                                </div>
+                                                <div>
+                                                    <label>May mắn</label>
+                                                    <input type="number" name="luck" value="0" min="0" max="50" />
+                                                </div>
+                                            </div>
+                                        }
+
+                                        @if (sel.AllowStrength)
+                                        {
+                                            <div class="field-grid">
+                                                <div>
+                                                    <label>Cấp độ (0–15)</label>
+                                                    <input type="number" name="strengthLevel" value="0" min="0" max="15" />
+                                                </div>
+                                            </div>
+                                        }
+
+                                        @if (sel.AllowGold)
+                                        {
+                                            <label>Đúc vàng (ngày, 0 = không đúc)</label>
+                                            <input type="number" name="goldDays" value="0" min="0" max="3650" />
+                                        }
+
+                                        <label>Tiêu đề mail</label>
+                                        <input name="title" value="Phần thưởng GM" maxlength="1000" />
+                                        <label>Nội dung mail</label>
+                                        <input name="content" value="Vật phẩm từ GM Panel" maxlength="2000" />
+                                        <button type="submit" class="btn primary"><i class="fa fa-bolt"></i> Gửi vật phẩm</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <div class="award-empty">
+                                        <i class="fa fa-hand-pointer-o"></i>
+                                        Chọn một vật phẩm bên trái để xem chi tiết và nhập các thông số gửi.
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </section>
+
+        @if (Model.Embed != 1)
+        {
+            <section class="card gm-tool-card" id="gm-tool-card">
+                <div class="page-head">
+                    <h2>Công cụ GM — Set Full</h2>
+                    <div class="row gap" style="margin-top:0;">
+                        <span class="badge-ok" id="gm-live-badge"><i class="fa fa-bolt"></i> Road GM API: đang kiểm tra…</span>
+                        <span class="badge-ok"><i class="fa fa-lock"></i> Admin/Develop</span>
+                    </div>
+                </div>
+                <div class="alert info">
+                    Các thao tác ghi trực tiếp DB. <b>Nếu người chơi đang online</b>, panel tự gọi
+                    <b>Road GM API</b> để áp chỉ số ngay trong game (in-memory + packet) —
+                    <b>không cần đăng nhập lại</b>; nếu Road API không kết nối được, bước đó vẫn ghi DB
+                    như cũ và người chơi cần đăng nhập lại.
+                    <br />
+                    ■ <b>Châu Báu</b> / <b>Ma Thạch</b> do Road GM API xử lý cả khi online lẫn offline:
+                    mở đủ <b>6 mũi khoan</b> (drill 6 lỗ) và gửi mail; Ma Thạch gửi qua
+                    <code>PlayerBussiness</code> nên có <b>đủ 6 chỉ số</b> khi mở thư.
+                    ■ <b>Vinh Dự / Nhẫn Cầu Hôn / Vua Gà / Bảo Vệ / Danh Hiệu</b> được
+                    <b>tính lại thuộc tính</b> (HP, công/thủ/nhanh/may) rồi gửi packet — client đổi ngay.
+                    <br />
+                    ■ <b>Phụ Ma / Đúc Hồn</b> chỉ áp cho <b>nhẫn/vòng tay đang trang bị</b> (gồm cả Nhẫn Cầu Hôn);
+                    <b>Hỗ Trợ</b> yêu cầu <b>đang trang bị Bùa Hộ Thân</b>; <b>Tiềm Năng</b> chỉ áp cho
+                    Kính/Mắt/Mặt/Tóc/Set quần áo/Set cánh đang trang bị.
+                    ■ Các nút <b>Tu luyện, Thẻ bài, Vật tổ, Miếu thần, Dát vàng, Tăng sao, Chiến hồn,
+                    Chế tạo, Tiến hoá VK phụ</b> port từ Form1 desktop (Road GM API xử lý).
+                    <br />
+                    Mỗi nút chạy AJAX riêng; <b>SET FULL</b> chạy lần lượt từng bước, không reload trang.
+                </div>
+
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="gm-tool-user-id" value="@u.UserID" />
+                <input type="hidden" id="gm-live-enabled" value="@(Model.RoadGmApiEnabled ? "1" : "0")" />
+                    <div class="gm-columns">
+                    <div class="gm-col">
+                        <div class="gm-col-title">Túi</div>
+<div class="gm-group">
+                            <div class="gm-group-title">Tu Luyện</div>
+                            <div class="gm-group-btns count-3">
+                                <button type="button" class="btn small" data-gm-feature="training_basic" data-gm-label="Tu luyện — Cơ Bản">Cơ Bản</button>
+                                <button type="button" class="btn small" data-gm-feature="training_second" data-gm-label="Tu luyện — TT Cấp 2">TT Cấp 2</button>
+                                <button type="button" class="btn small" data-gm-feature="training_element" data-gm-label="Tu luyện — Nguyên Tố">Nguyên Tố</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Thẻ Bài</div>
+                            <div class="gm-group-btns count-3">
+                                <button type="button" class="btn small" data-gm-feature="card_level" data-gm-label="Thẻ Bài — Lên Cấp">Lên Cấp</button>
+                                <button type="button" class="btn small" data-gm-feature="card_break" data-gm-label="Thẻ Bài — Đột Phá">Đột Phá</button>
+                                <button type="button" class="btn small" data-gm-feature="album" data-gm-label="Thẻ Bài — Full Album">Full</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Vật Tổ</div>
+                            <div class="gm-group-btns count-2">
+                                <button type="button" class="btn small" data-gm-feature="totem_level" data-gm-label="Vật Tổ — Lên Cấp">Lên Cấp</button>
+                                <button type="button" class="btn small" data-gm-feature="totem_rank" data-gm-label="Vật Tổ — Tăng Bậc">Tăng Bậc</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Châu Báu</div>
+                            <div class="gm-group-btns count-1">
+                                <button type="button" class="btn small" data-gm-feature="beads" data-gm-label="Châu Báu — Mở Mũi Khoan">Mở Mũi Khoan</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Phụ Kiện</div>
+                            <div class="gm-group-btns count-1">
+                                <button type="button" class="btn small" data-gm-feature="avatar" data-gm-label="Bộ Sưu Tập">Bộ Sưu Tập</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Ma Thạch</div>
+                            <div class="gm-group-btns count-2">
+                                <button type="button" class="btn small" data-gm-feature="magicstone" data-gm-label="Ma Thạch">Ma Thạch</button>
+                                <button type="button" class="btn small" data-gm-feature="magicjade" data-gm-label="Ma Ngọc">Ma Ngọc</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Miếu Thần</div>
+                            <div class="gm-group-btns count-2">
+                                <button type="button" class="btn small" data-gm-feature="temple_bless" data-gm-label="Miếu Thần — Chúc Phúc">Chúc Phúc</button>
+                                <button type="button" class="btn small" data-gm-feature="temple_exalt" data-gm-label="Miếu Thần — Thăng Hoa">Thăng Hoa</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Ấn</div>
+                            <div class="gm-group-btns count-2">
+                                <button type="button" class="btn small" data-gm-feature="mark_train" data-gm-label="Ấn — Luyện">Luyện</button>
+                                <button type="button" class="btn small" data-gm-feature="mark_refine" data-gm-label="Ấn — Luyện hóa">Luyện hóa</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gm-col">
+                        <div class="gm-col-title">Cá Nhân</div>
+<div class="gm-group">
+                            <div class="gm-group-title">Cấp Vua Gà</div>
+                            <div class="gm-group-btns count-1">
+                                <button type="button" class="btn small" data-gm-feature="king" data-gm-label="Cấp Vua Gà">Đột Phá</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Bảo Vệ</div>
+                            <div class="gm-group-btns count-1">
+                                <button type="button" class="btn small" data-gm-feature="guard" data-gm-label="Bảo Vệ">Bảo Vệ</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Sổ Tay Thám Hiểm</div>
+                            <div class="gm-group-btns count-1">
+                                <button type="button" class="btn small" data-gm-feature="explorer" data-gm-label="Sổ Tay Thám Hiểm">Tiến Hoá</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Dây Chuyền</div>
+                            <div class="gm-group-btns count-2">
+                                <button type="button" class="btn small" data-gm-feature="necklace_train" data-gm-label="Dây Chuyền — Luyện">Luyện</button>
+                                <button type="button" class="btn small" data-gm-feature="necklace_cast" data-gm-label="Dây Chuyền — Đúc">Đúc</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Hỗ Trợ</div>
+                            <div class="gm-group-btns count-2">
+                                <button type="button" class="btn small" data-gm-feature="amulet_level" data-gm-label="Hỗ Trợ — Lên Cấp">Lên Cấp</button>
+                                <button type="button" class="btn small" data-gm-feature="amulet_wash" data-gm-label="Hỗ Trợ — Tẩy Luyện">Tẩy Luyện</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Vinh Dự Gunner</div>
+                            <div class="gm-group-btns count-1">
+                                <button type="button" class="btn small" data-gm-feature="honor" data-gm-label="Vinh Dự Gunner">Lên Cấp</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Danh Hiệu</div>
+                            <div class="gm-group-btns count-1">
+                                <button type="button" class="btn small" data-gm-feature="titles" data-gm-label="Danh Hiệu">Lên Cấp</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Nhẫn Cầu Hôn</div>
+                            <div class="gm-group-btns count-2">
+                                <button type="button" class="btn small" data-gm-feature="sworn" data-gm-label="Nhẫn Cầu Hôn">Lên Cấp</button>
+                                <button type="button" class="btn small" data-gm-feature="sworn_love" data-gm-label="Nhẫn Cầu Hôn — Tình Ý">Tình Ý</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gm-col">
+                        <div class="gm-col-title">Tiệm Rèn</div>
+<div class="gm-group">
+                            <div class="gm-group-title">Tiềm Năng</div>
+                            <div class="gm-group-btns count-1">
+                                <button type="button" class="btn small" data-gm-feature="potential" data-gm-label="Tiềm Năng">Kích Hoạt</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Dát Vàng</div>
+                            <div class="gm-group-btns count-3">
+                                <button type="button" class="btn small" data-gm-feature="gold_weapon" data-gm-label="Dát Vàng — Vũ Khí">Vũ Khí</button>
+                                <button type="button" class="btn small" data-gm-feature="gold_hat" data-gm-label="Dát Vàng — Nón">Nón</button>
+                                <button type="button" class="btn small" data-gm-feature="gold_cloth" data-gm-label="Dát Vàng — Quần Áo">Quần Áo</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Chiến Hồn</div>
+                            <div class="gm-group-btns count-1">
+                                <button type="button" class="btn small" data-gm-feature="battle_soul" data-gm-label="Chiến Hồn">Chiến Hồn</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Phụ Ma</div>
+                            <div class="gm-group-btns count-2">
+                                <button type="button" class="btn small" data-gm-feature="phuma" data-gm-label="Phụ Ma">Phụ Ma</button>
+                                <button type="button" class="btn small" data-gm-feature="duchon" data-gm-label="Đúc Hồn">Đúc Hồn</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Chế Tạo</div>
+                            <div class="gm-group-btns count-1">
+                                <button type="button" class="btn small" data-gm-feature="craft" data-gm-label="Chế Tạo">Tạo</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Tăng Sao</div>
+                            <div class="gm-group-btns count-3">
+                                <button type="button" class="btn small" data-gm-feature="star_weapon" data-gm-label="Tăng Sao — Vũ Khí">Vũ Khí</button>
+                                <button type="button" class="btn small" data-gm-feature="star_hat" data-gm-label="Tăng Sao — Nón">Nón</button>
+                                <button type="button" class="btn small" data-gm-feature="star_cloth" data-gm-label="Tăng Sao — Quần Áo">Quần Áo</button>
+                            </div>
+                        </div>
+<div class="gm-group">
+                            <div class="gm-group-title">Tiến Hoá VK Phụ</div>
+                            <div class="gm-group-btns count-1">
+                                <button type="button" class="btn small" data-gm-feature="subweapon_evolve" data-gm-label="Tiến Hoá VK Phụ">Tiến Hoá</button>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="gm-columns">
+                        <div class="gm-col">
+                            <div class="gm-col-title">Thú Cưng</div>
+                            <div class="gm-group">
+                                <div class="gm-group-title">Trùng Sinh PET</div>
+                                <div class="gm-group-btns count-1">
+                                    <button type="button" class="btn small" data-gm-feature="pet_rebirth" data-gm-label="Trùng Sinh PET">Trùng Sinh</button>
+                                </div>
+                            </div>
+                            <div class="gm-group">
+                                <div class="gm-group-title">Tiến Hóa PET</div>
+                                <div class="gm-group-btns count-1">
+                                    <button type="button" class="btn small" data-gm-feature="pet_evolve" data-gm-label="Tiến Hóa PET">Tiến Hóa</button>
+                                </div>
+                            </div>
+                            <div class="gm-group">
+                                <div class="gm-group-title">Mạnh Hóa</div>
+                                <div class="gm-group-btns count-1">
+                                    <button type="button" class="btn small" data-gm-feature="pet_strengthen" data-gm-label="Mạnh Hóa PET">Mạnh Hóa</button>
+                                </div>
+                            </div>
+                            <div class="gm-group">
+                                <div class="gm-group-title">Đột Phá PET</div>
+                                <div class="gm-group-btns count-1">
+                                    <button type="button" class="btn small" data-gm-feature="pet_breakthrough" data-gm-label="Đột Phá PET">Đột Phá</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="gm-col">
+                            <div class="gm-col-title">Thú Cưỡi</div>
+                            <div class="gm-group">
+                                <div class="gm-group-title">Tăng Cấp Thú</div>
+                                <div class="gm-group-btns count-1">
+                                    <button type="button" class="btn small" data-gm-feature="mount_level" data-gm-label="Tăng Cấp Thú">Lên Cấp</button>
+                                </div>
+                            </div>
+                            <div class="gm-group">
+                                <div class="gm-group-title">Kỹ Năng Thú</div>
+                                <div class="gm-group-btns count-1">
+                                    <button type="button" class="btn small" data-gm-feature="mount_skill" data-gm-label="Kỹ Năng Thú">Lên Cấp</button>
+                                </div>
+                            </div>
+                            <div class="gm-group">
+                                <div class="gm-group-title">Biến Hình Thú</div>
+                                <div class="gm-group-btns count-1">
+                                    <button type="button" class="btn small" data-gm-feature="mount_avatar" data-gm-label="Biến Hình Thú">Biến Hình</button>
+                                </div>
+                            </div>
+                            <div class="gm-group">
+                                <div class="gm-group-title">Bùa Thú</div>
+                                <div class="gm-group-btns count-1">
+                                    <button type="button" class="btn small" data-gm-feature="mount_amulet" data-gm-label="Tẩy Bùa Thú">Tẩy Bùa</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="gm-col">
+                            <div class="gm-col-title">Thần Hộ Mệnh</div>
+                            <div class="gm-group">
+                                <div class="gm-group-title">Nuôi Thần Hộ Mệnh</div>
+                                <div class="gm-group-btns count-1">
+                                    <button type="button" class="btn small" data-gm-feature="elf_nurture" data-gm-label="Thần Hộ Mệnh — Nuôi">Nuôi</button>
+                                </div>
+                            </div>
+                            <div class="gm-group">
+                                <div class="gm-group-title">Luyện Thần Hộ Mệnh</div>
+                                <div class="gm-group-btns count-1">
+                                    <button type="button" class="btn small" data-gm-feature="elf_train" data-gm-label="Thần Hộ Mệnh — Luyện">Luyện</button>
+                                </div>
+                            </div>
+                            <div class="gm-group">
+                                <div class="gm-group-title">Sách Kỹ Năng</div>
+                                <div class="gm-group-btns count-1">
+                                    <button type="button" class="btn small" data-gm-feature="elf_learn" data-gm-label="Sách Kỹ Năng — Học">Học</button>
+                                </div>
+                            </div>
+                            <div class="gm-group">
+                                <div class="gm-group-title">Linh Bảo</div>
+                                <div class="gm-group-btns count-1">
+                                    <button type="button" class="btn small" data-gm-feature="elf_linhbao" data-gm-label="Thần Hộ Mệnh — Linh Bảo">Linh Bảo</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                <div class="row gap" style="margin-top:14px; align-items:center;">
+                    <button type="button" class="btn primary" id="gm-set-full"><i class="fa fa-bolt"></i> SET FULL USER</button>
+                    <button type="button" class="btn small" id="gm-clear-progress">Xoá tiến trình</button>
+                    <span class="muted small" id="gm-progress">Sẵn sàng</span>
+                </div>
+            </section>
+        }
+    }
+
+    <section class="card">
+        <div class="page-head">
+            <h2>Vật phẩm <span class="muted small">(@Model.ItemTotal)</span></h2>
+            <div class="row gap" style="margin-top:0;">
+                <a class="btn small @(Model.Bag == null ? "primary" : null)" href="/Users/Details?id=@u.UserID">Tất cả</a>
+                @foreach (var bag in Model.Bags)
+                {
+                    <a class="btn small @(Model.Bag == bag.BagType ? "primary" : null)" href="/Users/Details?id=@u.UserID&bag=@bag.BagType">@GunnyPanel.Pages.UserDetailModel.BagLabel(bag.BagType) (@bag.Count)</a>
+                }
+            </div>
+        </div>
+
+        @if (Model.Items.Count == 0)
+        {
+            <p class="muted">Không có vật phẩm.</p>
+        }
+        else
+        {
+            <div class="table-wrap">
+                <table class="list compact">
+                    <thead>
+                    <tr><th>ItemID</th><th>Tên vật phẩm</th><th>TemplateID</th><th>Loại</th><th>Place</th><th>SL</th><th>+Cường</th><th>Khóa</th><th>Hạn</th><th>Bắt đầu</th>@if (Model.CanWrite) { <th>Thao tác</th> }</tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td class="mono">@item.ItemID</td>
+                            <td><a href="/Users/Item?id=@item.ItemID&uid=@u.UserID">@(string.IsNullOrWhiteSpace(item.Name) ? "(không có trong Shop_Goods)" : item.Name)</a></td>
+                            <td class="mono">@item.TemplateID</td>
+                            <td>@GunnyPanel.Pages.UserDetailModel.BagLabel(item.BagType)</td>
+                            <td class="mono">@item.Place</td>
+                            <td class="mono">@item.Count</td>
+                            <td class="mono">@item.StrengthenLevel</td>
+                            <td>@(item.IsBinds ? "Có" : "Không")</td>
+                            <td>@(item.ValidDate == "0" ? "Vĩnh viễn" : item.ValidDate + " ngày")</td>
+                            <td class="mono small">@item.BeginDate</td>
+                            @if (Model.CanWrite)
+                            {
+                                <td>
+                                    <form method="post" asp-page-handler="DeleteItem" onsubmit="return confirm('Xoá (soft-delete) vật phẩm @item.ItemID — @item.Name?');" style="margin:0;">
+                                        <input type="hidden" name="id" value="@u.UserID" />
+                                        <input type="hidden" name="itemId" value="@item.ItemID" />
+                                        <input type="hidden" name="confirmNick" value="@u.NickName" />
+                                        <button type="submit" class="btn small danger"><i class="fa fa-times"></i> Xoá</button>
+                                    </form>
+                                </td>
+                            }
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+            <partial name="_Pager" model="Model.Pager" />
+        }
+    </section>
+}
+
+@functions {
+    private string Get(string key) => Model.Info.TryGetValue(key, out var value) && !string.IsNullOrWhiteSpace(value) ? value : "—";
+}
+
+@section Scripts {
+    <script>
+        (function () {
+            var openPicker = document.getElementById('open-award-picker');
+            var pickerOverlay = document.getElementById('award-picker-overlay');
+            var pickerFrame = document.getElementById('award-picker-frame');
+            var closePicker = document.getElementById('close-award-picker');
+            if (openPicker && pickerOverlay && pickerFrame) {
+                openPicker.addEventListener('click', function () {
+                    var cat = document.getElementById('award-cat');
+                    var catId = cat ? cat.value : '0';
+                    pickerFrame.src = '/Users/Details?id=@Model.Id&cat=' + encodeURIComponent(catId) + '&picker=1&embed=1';
+                    pickerOverlay.style.display = 'flex';
+                });
+                var hidePicker = function () {
+                    pickerOverlay.style.display = 'none';
+                    pickerFrame.src = 'about:blank';
+                };
+                if (closePicker) closePicker.addEventListener('click', hidePicker);
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape' && pickerOverlay.style.display !== 'none') hidePicker();
+                });
+                window.addEventListener('message', function (e) {
+                    var d = e.data;
+                    if (!d || d.type !== 'gp-award-result') return;
+                    if (window.gpToast) window.gpToast(d.message || 'Đã gửi vật phẩm.', !d.ok);
+                });
+            }
+
+            var maxStats = document.getElementById('award-max-stats');
+            if (maxStats) {
+                maxStats.addEventListener('click', function () {
+                    var f = document.getElementById('award-send-form');
+                    if (!f) return;
+                    ['attack', 'defend', 'agility', 'luck'].forEach(function (name) {
+                        var el = f.querySelector('input[name="' + name + '"]');
+                        if (el) el.value = '50';
+                    });
+                });
+            }
+
+            var awardForm = document.getElementById('award-send-form');
+            if (awardForm) {
+                awardForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    var btn = awardForm.querySelector('button[type="submit"]');
+                    var oldHtml = btn ? btn.innerHTML : '';
+                    if (btn) { btn.disabled = true; btn.innerHTML = 'Đang gửi...'; }
+                    fetch('/Users/Details?handler=SendItemAjax', {
+                        method: 'POST',
+                        body: new FormData(awardForm),
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                        .then(function (r) { return r.json().then(function (d) { return { status: r.status, data: d }; }); })
+                        .then(function (res) {
+                            var d = res.data || {};
+                            var message = d.message || (res.status === 200 ? 'Đã gửi vật phẩm.' : 'Gửi thất bại.');
+                            if (window.parent && window.parent !== window) {
+                                window.parent.postMessage({ type: 'gp-award-result', ok: !!d.ok, message: message }, '*');
+                            } else if (window.gpToast) {
+                                window.gpToast(message, !d.ok);
+                            }
+                        })
+                        .catch(function () {
+                            if (window.gpToast) window.gpToast('Không gửi được (lỗi mạng/server).', true);
+                        })
+                        .then(function () {
+                            if (btn) { btn.disabled = false; btn.innerHTML = oldHtml; }
+                        });
+                });
+            }
+        })();
+    </script>
+
+    <script>
+        (function () {
+            var adminCard = document.getElementById('admin-actions');
+            var tokenInput = adminCard ? adminCard.querySelector('input[name="__RequestVerificationToken"]') : null;
+
+            function say(text, isError) {
+                if (window.gpToast) window.gpToast(text, !!isError);
+                else alert(text);
+            }
+
+            var liveButton = document.getElementById('live-state-check');
+            var liveResult = document.getElementById('live-state-result');
+            if (liveButton && liveResult) {
+                liveButton.addEventListener('click', function () {
+                    var userId = liveButton.getAttribute('data-user-id');
+                    liveResult.textContent = 'Đang hỏi CenterService...';
+                    liveButton.disabled = true;
+                    fetch('/Users/Details?handler=PlayerState&id=' + encodeURIComponent(userId), {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                        .then(function (response) {
+                            return response.json().then(function (json) { return json; }, function () {
+                                return { ok: false, message: 'Server trả lỗi (HTTP ' + response.status + ').' };
+                            });
+                        })
+                        .then(function (data) {
+                            liveResult.textContent = data.ok
+                                ? 'CenterService: ' + data.message + ' (mã ' + data.centerState + ') · DB State = ' + data.dbState
+                                : (data.message || 'Không kiểm tra được.');
+                        })
+                        .catch(function () {
+                            liveResult.textContent = 'Không gửi được yêu cầu (lỗi mạng/server).';
+                        })
+                        .then(function () { liveButton.disabled = false; });
+                });
+            }
+
+            var kickButton = document.getElementById('kick-user');
+            var kickResult = document.getElementById('kick-result');
+            var kickReason = document.getElementById('kick-reason');
+            if (kickButton && tokenInput) {
+                kickButton.addEventListener('click', function () {
+                    var userId = kickButton.getAttribute('data-user-id');
+                    var nick = kickButton.getAttribute('data-nick') || ('UserID ' + userId);
+                    if (!confirm('Kick ' + nick + ' (UserID ' + userId + ') khỏi game?\nNgười chơi sẽ bị ngắt kết nối ngay.')) return;
+
+                    var body = new FormData();
+                    body.append('id', userId);
+                    body.append('reason', kickReason ? kickReason.value : '');
+                    body.append('__RequestVerificationToken', tokenInput.value);
+
+                    kickButton.disabled = true;
+                    var oldText = kickButton.innerHTML;
+                    kickButton.innerHTML = 'Đang kick...';
+                    if (kickResult) kickResult.textContent = 'Đang gửi lệnh kick...';
+                    fetch('/Users/Details?handler=Kick', {
+                        method: 'POST',
+                        body: body,
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                        .then(function (response) {
+                            return response.json().then(function (json) { return json; }, function () {
+                                return { ok: false, message: 'Server trả lỗi (HTTP ' + response.status + ').' };
+                            });
+                        })
+                        .then(function (data) {
+                            if (kickResult) kickResult.textContent = data.message || '';
+                            say(data.message || 'Không có phản hồi.', !data.ok);
+                            if (data.ok) window.setTimeout(function () { window.location.reload(); }, 1500);
+                        })
+                        .catch(function () {
+                            if (kickResult) kickResult.textContent = 'Không gửi được yêu cầu (lỗi mạng/server).';
+                            say('Không gửi được yêu cầu (lỗi mạng/server).', true);
+                        })
+                        .then(function () {
+                            kickButton.disabled = false;
+                            kickButton.innerHTML = oldText;
+                        });
+                });
+            }
+        })();
+    </script>
+
+    <script>
+        (function () {
+            var card = document.getElementById('gm-tool-card');
+            if (!card) return;
+
+            var userId = document.getElementById('gm-tool-user-id').value;
+            var tokenInput = card.querySelector('input[name="__RequestVerificationToken"]');
+            var progress = document.getElementById('gm-progress');
+            var fullButton = document.getElementById('gm-set-full');
+            var liveBadge = document.getElementById('gm-live-badge');
+            var liveEnabledInput = document.getElementById('gm-live-enabled');
+            var featureButtons = Array.prototype.slice.call(card.querySelectorAll('[data-gm-feature]'));
+            var order = [
+                ['king', 'Cấp Vua Gà'], ['guard', 'Bảo Vệ'], ['honor', 'Vinh Dự'],
+                ['explorer', 'Sổ Tay'], ['titles', 'Danh Hiệu'], ['sworn', 'Nhẫn Cầu Hôn'],
+                ['sworn_love', 'Nhẫn Cầu Hôn — Tình Ý'],
+                ['amulet_level', 'Hỗ Trợ Lên Cấp'], ['amulet_wash', 'Hỗ Trợ Tẩy Luyện'],
+                ['potential', 'Tiềm Năng'], ['phuma', 'Phụ Ma'], ['duchon', 'Đúc Hồn'],
+                ['beads', 'Châu Báu'], ['magicstone', 'Ma Thạch'], ['magicjade', 'Ma Ngọc'],
+                ['avatar', 'Bộ Sưu Tập'], ['album', 'Full Album'],
+                ['mark_train', 'Ấn — Luyện'], ['mark_refine', 'Ấn — Luyện hóa']
+            ];
+
+            if (!tokenInput) return;
+            var token = tokenInput.value;
+
+            function say(text, error) {
+                if (window.gpToast) window.gpToast(text, !!error);
+                else if (error) alert(text);
+            }
+
+            function setBusy(busy) {
+                fullButton.disabled = busy;
+                featureButtons.forEach(function (b) { b.disabled = busy; });
+            }
+
+            function liveSuffix(live) { return live ? ' ◆ live' : ''; }
+
+            // Badge trạng thái Road GM API (chỉ hiển thị, không ảnh hưởng thao tác)
+            function setLiveBadge(ok, text) {
+                if (!liveBadge) return;
+                liveBadge.innerHTML = '';
+                var icon = document.createElement('i');
+                icon.className = ok ? 'fa fa-bolt' : 'fa fa-plug';
+                liveBadge.appendChild(icon);
+                liveBadge.appendChild(document.createTextNode(' ' + (text || (ok ? 'Road GM API: OK' : 'Road GM API: không kết nối'))));
+                liveBadge.style.color = ok ? '' : '#8f3a47';
+            }
+
+            (function loadLiveStatus() {
+                var enabledAttr = liveEnabledInput ? liveEnabledInput.value : '0';
+                if (enabledAttr !== '1') {
+                    if (liveBadge) {
+                        liveBadge.innerHTML = '';
+                        var i = document.createElement('i');
+                        i.className = 'fa fa-plug';
+                        liveBadge.appendChild(i);
+                        liveBadge.appendChild(document.createTextNode(' Road GM API: tắt'));
+                        liveBadge.style.color = '#8f3a47';
+                    }
+                    return;
+                }
+                fetch('/Users/Details?handler=LiveStatus', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(function (res) { return res.json(); })
+                    .then(function (d) {
+                        if (d && d.ok) setLiveBadge(true, d.message || 'Road GM API: OK');
+                        else setLiveBadge(false, (d && d.message) || 'Road GM API: không kết nối');
+                    })
+                    .catch(function () { setLiveBadge(false, 'Road GM API: không kết nối'); });
+            })();
+
+            async function callFeature(feature) {
+                var fd = new FormData();
+                fd.append('id', userId);
+                fd.append('feature', feature);
+                fd.append('__RequestVerificationToken', token);
+                var res = await fetch('/Users/Details?handler=GmTool', {
+                    method: 'POST',
+                    body: fd,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                var data = {};
+                try { data = await res.json(); } catch (_) { data = { ok: false, message: 'Server trả về lỗi.' }; }
+                return {
+                    ok: res.ok && data.ok === true,
+                    live: data.live === true,
+                    message: data.message || 'Không có phản hồi.'
+                };
+            }
+
+            featureButtons.forEach(function (btn) {
+                btn.addEventListener('click', async function () {
+                    var feature = btn.getAttribute('data-gm-feature');
+                    var label = (btn.getAttribute('data-gm-label') || btn.textContent || '').replace(/\s+/g, ' ').trim();
+                    setBusy(true);
+                    if (progress) { progress.textContent = 'Đang chạy ' + label + '...'; progress.title = ''; }
+                    try {
+                        var r = await callFeature(feature);
+                        var msg = 'Đã nâng cấp tối đa ' + label + (r.ok ? ' thành công' : ' thất bại');
+                        var detail = (r.message || '').trim();
+                        if (progress) { progress.textContent = msg + liveSuffix(r.live); progress.title = detail; }
+                        say(r.ok && detail ? detail : msg, !r.ok);
+                    } catch (e) {
+                        var failMsg = 'Đã nâng cấp tối đa ' + label + ' thất bại';
+                        if (progress) { progress.textContent = failMsg; progress.title = e.message || ''; }
+                        say(failMsg, true);
+                    } finally {
+                        setBusy(false);
+                    }
+                });
+            });
+
+            if (fullButton) {
+                fullButton.addEventListener('click', async function () {
+                    if (!confirm('Set FULL toàn bộ cho user ' + userId + '?\nThao tác ghi DB; nếu user đang online sẽ áp dụng live qua Road GM API.')) return;
+                    setBusy(true);
+                    var failed = [];
+                    var liveCount = 0;
+                    for (var i = 0; i < order.length; i++) {
+                        var feature = order[i][0];
+                        var label = order[i][1];
+                        if (progress) progress.textContent = 'SET FULL ' + (i + 1) + '/' + order.length + ': ' + label;
+                        try {
+                            var r = await callFeature(feature);
+                            if (!r.ok) failed.push(label + ': ' + r.message);
+                            else if (r.live) liveCount++;
+                            if (progress) progress.textContent = 'SET FULL ' + (i + 1) + '/' + order.length + ': ' + label + liveSuffix(r.live);
+                        } catch (e) {
+                            failed.push(label + ': ' + e.message);
+                        }
+                    }
+                    setBusy(false);
+                    var fullMsg = 'Đã nâng cấp tối đa toàn bộ ' + (failed.length === 0 ? 'thành công' : 'thất bại');
+                    if (progress) {
+                        progress.textContent = fullMsg + (liveCount > 0 ? ' (live ' + liveCount + ' bước)' : '');
+                        progress.title = failed.length ? failed.join('\n') : '';
+                    }
+                    say(fullMsg, failed.length > 0);
+                });
+            }
+
+            var clear = document.getElementById('gm-clear-progress');
+            if (clear) clear.addEventListener('click', function () {
+                if (progress) progress.textContent = 'Sẵn sàng';
+            });
+        })();
+    </script>
+}

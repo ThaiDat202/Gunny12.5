@@ -1,0 +1,630 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Gunny\\Gunny12.5\\Full Source\\Road.Service\\Road.Service.csproj": {}
+  },
+  "projects": {
+    "C:\\Gunny\\Gunny12.5\\Full Source\\Bussiness\\bussiness.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Gunny\\Gunny12.5\\Full Source\\Bussiness\\bussiness.csproj",
+        "projectName": "Bussiness",
+        "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\Bussiness\\bussiness.csproj",
+        "packagesPath": "C:\\Users\\hotha\\.nuget\\packages\\",
+        "outputPath": "C:\\Gunny\\Gunny12.5\\Full Source\\Bussiness\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\hotha\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net472": {
+            "framework": "net472",
+            "targetAlias": "net472",
+            "projectReferences": {
+              "C:\\Gunny\\Gunny12.5\\Full Source\\entitydatabase\\entitydatabase.csproj": {
+                "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\entitydatabase\\entitydatabase.csproj"
+              },
+              "C:\\Gunny\\Gunny12.5\\Full Source\\game.base\\game.base.csproj": {
+                "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\game.base\\game.base.csproj"
+              },
+              "C:\\Gunny\\Gunny12.5\\Full Source\\SqlDataProvider\\SqlDataProvider.csproj": {
+                "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\SqlDataProvider\\SqlDataProvider.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.400"
+      },
+      "frameworks": {
+        "net472": {
+          "framework": "net472",
+          "targetAlias": "net472",
+          "dependencies": {
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            },
+            "log4net": {
+              "target": "Package",
+              "version": "[2.0.14, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.403\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Gunny\\Gunny12.5\\Full Source\\ddtankhelp\\ddtankhelp.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Gunny\\Gunny12.5\\Full Source\\ddtankhelp\\ddtankhelp.csproj",
+        "projectName": "DDtankHelp",
+        "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\ddtankhelp\\ddtankhelp.csproj",
+        "packagesPath": "C:\\Users\\hotha\\.nuget\\packages\\",
+        "outputPath": "C:\\Gunny\\Gunny12.5\\Full Source\\ddtankhelp\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\hotha\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net46"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net46": {
+            "framework": "net46",
+            "targetAlias": "net46",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.400"
+      },
+      "frameworks": {
+        "net46": {
+          "framework": "net46",
+          "targetAlias": "net46",
+          "dependencies": {
+            "Microsoft.NETFramework.ReferenceAssemblies": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.403\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Gunny\\Gunny12.5\\Full Source\\entitydatabase\\entitydatabase.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Gunny\\Gunny12.5\\Full Source\\entitydatabase\\entitydatabase.csproj",
+        "projectName": "EntityDatabase",
+        "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\entitydatabase\\entitydatabase.csproj",
+        "packagesPath": "C:\\Users\\hotha\\.nuget\\packages\\",
+        "outputPath": "C:\\Gunny\\Gunny12.5\\Full Source\\entitydatabase\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\hotha\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net472": {
+            "framework": "net472",
+            "targetAlias": "net472",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.400"
+      },
+      "frameworks": {
+        "net472": {
+          "framework": "net472",
+          "targetAlias": "net472",
+          "dependencies": {
+            "EntityFramework": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.403\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Gunny\\Gunny12.5\\Full Source\\filedialogsthreadappar\\filedialogsthreadappar.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Gunny\\Gunny12.5\\Full Source\\filedialogsthreadappar\\filedialogsthreadappar.csproj",
+        "projectName": "FileDialogsThreadAppartmentSafe",
+        "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\filedialogsthreadappar\\filedialogsthreadappar.csproj",
+        "packagesPath": "C:\\Users\\hotha\\.nuget\\packages\\",
+        "outputPath": "C:\\Gunny\\Gunny12.5\\Full Source\\filedialogsthreadappar\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\hotha\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net472": {
+            "framework": "net472",
+            "targetAlias": "net472",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.400"
+      },
+      "frameworks": {
+        "net472": {
+          "framework": "net472",
+          "targetAlias": "net472",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.403\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Gunny\\Gunny12.5\\Full Source\\game.base\\game.base.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Gunny\\Gunny12.5\\Full Source\\game.base\\game.base.csproj",
+        "projectName": "Game.Base",
+        "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\game.base\\game.base.csproj",
+        "packagesPath": "C:\\Users\\hotha\\.nuget\\packages\\",
+        "outputPath": "C:\\Gunny\\Gunny12.5\\Full Source\\game.base\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\hotha\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net472": {
+            "framework": "net472",
+            "targetAlias": "net472",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.400"
+      },
+      "frameworks": {
+        "net472": {
+          "framework": "net472",
+          "targetAlias": "net472",
+          "dependencies": {
+            "log4net": {
+              "target": "Package",
+              "version": "[2.0.14, )"
+            },
+            "protobuf-net": {
+              "target": "Package",
+              "version": "[2.4.0, )"
+            },
+            "zlib.net": {
+              "target": "Package",
+              "version": "[1.0.4, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.403\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Gunny\\Gunny12.5\\Full Source\\Game.Logic\\game.logic.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Gunny\\Gunny12.5\\Full Source\\Game.Logic\\game.logic.csproj",
+        "projectName": "Game.Logic",
+        "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\Game.Logic\\game.logic.csproj",
+        "packagesPath": "C:\\Users\\hotha\\.nuget\\packages\\",
+        "outputPath": "C:\\Gunny\\Gunny12.5\\Full Source\\Game.Logic\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\hotha\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net472": {
+            "framework": "net472",
+            "targetAlias": "net472",
+            "projectReferences": {
+              "C:\\Gunny\\Gunny12.5\\Full Source\\Bussiness\\bussiness.csproj": {
+                "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\Bussiness\\bussiness.csproj"
+              },
+              "C:\\Gunny\\Gunny12.5\\Full Source\\entitydatabase\\entitydatabase.csproj": {
+                "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\entitydatabase\\entitydatabase.csproj"
+              },
+              "C:\\Gunny\\Gunny12.5\\Full Source\\game.base\\game.base.csproj": {
+                "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\game.base\\game.base.csproj"
+              },
+              "C:\\Gunny\\Gunny12.5\\Full Source\\SqlDataProvider\\SqlDataProvider.csproj": {
+                "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\SqlDataProvider\\SqlDataProvider.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.400"
+      },
+      "frameworks": {
+        "net472": {
+          "framework": "net472",
+          "targetAlias": "net472",
+          "dependencies": {
+            "log4net": {
+              "target": "Package",
+              "version": "[2.0.14, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.403\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Gunny\\Gunny12.5\\Full Source\\game.server\\game.server.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Gunny\\Gunny12.5\\Full Source\\game.server\\game.server.csproj",
+        "projectName": "Game.Server",
+        "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\game.server\\game.server.csproj",
+        "packagesPath": "C:\\Users\\hotha\\.nuget\\packages\\",
+        "outputPath": "C:\\Gunny\\Gunny12.5\\Full Source\\game.server\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\hotha\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net472": {
+            "framework": "net472",
+            "targetAlias": "net472",
+            "projectReferences": {
+              "C:\\Gunny\\Gunny12.5\\Full Source\\Bussiness\\bussiness.csproj": {
+                "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\Bussiness\\bussiness.csproj"
+              },
+              "C:\\Gunny\\Gunny12.5\\Full Source\\ddtankhelp\\ddtankhelp.csproj": {
+                "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\ddtankhelp\\ddtankhelp.csproj"
+              },
+              "C:\\Gunny\\Gunny12.5\\Full Source\\Game.Logic\\game.logic.csproj": {
+                "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\Game.Logic\\game.logic.csproj"
+              },
+              "C:\\Gunny\\Gunny12.5\\Full Source\\SqlDataProvider\\SqlDataProvider.csproj": {
+                "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\SqlDataProvider\\SqlDataProvider.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.400"
+      },
+      "frameworks": {
+        "net472": {
+          "framework": "net472",
+          "targetAlias": "net472",
+          "dependencies": {
+            "EntityFramework": {
+              "target": "Package",
+              "version": "[6.4.4, )"
+            },
+            "Microsoft.AspNet.SignalR.Client": {
+              "target": "Package",
+              "version": "[2.4.3, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            },
+            "System.ValueTuple": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "log4net": {
+              "target": "Package",
+              "version": "[2.0.14, )"
+            },
+            "morelinq": {
+              "target": "Package",
+              "version": "[3.3.2, )"
+            },
+            "protobuf-net": {
+              "target": "Package",
+              "version": "[2.4.0, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.403\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Gunny\\Gunny12.5\\Full Source\\Road.Service\\Road.Service.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Gunny\\Gunny12.5\\Full Source\\Road.Service\\Road.Service.csproj",
+        "projectName": "Road.Service",
+        "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\Road.Service\\Road.Service.csproj",
+        "packagesPath": "C:\\Users\\hotha\\.nuget\\packages\\",
+        "outputPath": "C:\\Gunny\\Gunny12.5\\Full Source\\Road.Service\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\hotha\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net472": {
+            "framework": "net472",
+            "targetAlias": "net472",
+            "projectReferences": {
+              "C:\\Gunny\\Gunny12.5\\Full Source\\filedialogsthreadappar\\filedialogsthreadappar.csproj": {
+                "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\filedialogsthreadappar\\filedialogsthreadappar.csproj"
+              },
+              "C:\\Gunny\\Gunny12.5\\Full Source\\game.server\\game.server.csproj": {
+                "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\game.server\\game.server.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.400"
+      },
+      "frameworks": {
+        "net472": {
+          "framework": "net472",
+          "targetAlias": "net472",
+          "dependencies": {
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            },
+            "System.Resources.Extensions": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "log4net": {
+              "target": "Package",
+              "version": "[2.0.14, )"
+            },
+            "zlib.net": {
+              "target": "Package",
+              "version": "[1.0.4, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.403\\RuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win-x64": {
+          "#import": []
+        }
+      }
+    },
+    "C:\\Gunny\\Gunny12.5\\Full Source\\SqlDataProvider\\SqlDataProvider.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Gunny\\Gunny12.5\\Full Source\\SqlDataProvider\\SqlDataProvider.csproj",
+        "projectName": "SqlDataProvider",
+        "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\SqlDataProvider\\SqlDataProvider.csproj",
+        "packagesPath": "C:\\Users\\hotha\\.nuget\\packages\\",
+        "outputPath": "C:\\Gunny\\Gunny12.5\\Full Source\\SqlDataProvider\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\hotha\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net472": {
+            "framework": "net472",
+            "targetAlias": "net472",
+            "projectReferences": {
+              "C:\\Gunny\\Gunny12.5\\Full Source\\entitydatabase\\entitydatabase.csproj": {
+                "projectPath": "C:\\Gunny\\Gunny12.5\\Full Source\\entitydatabase\\entitydatabase.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.400"
+      },
+      "frameworks": {
+        "net472": {
+          "framework": "net472",
+          "targetAlias": "net472",
+          "dependencies": {
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            },
+            "protobuf-net": {
+              "target": "Package",
+              "version": "[2.4.0, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.403\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

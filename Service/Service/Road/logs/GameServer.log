@@ -1,0 +1,12 @@
+2026-11-24 08:43:14,619 - [MAIN] - WARN  - Game.Server.Elf.ElfEquipConfigMgr - ElfEquipConfigMgr: loaded 1500 LinkPal rows, 30 item templates, 30 type/quality groups
+2026-11-24 08:43:14,812 - [MAIN] - WARN  - Game.Server.Farm.FarmRankJob - FarmRankJob: started (manor rank xml, every 5 min)
+2026-11-24 08:43:14,812 - [MAIN] - WARN  - Game.Server.Farm.FarmActivityMgr - FarmActivityMgr: started
+2026-11-24 08:43:17,843 - [21] - WARN  - Game.Server.Farm.ManorConfigMgr - ManorConfigMgr: loaded 82 manor item templates
+2026-11-24 08:43:17,852 - [21] - WARN  - Game.Server.Farm.ManorConfigMgr - ManorConfigMgr: loaded 6 manor upgrade types
+2026-11-24 08:43:17,865 - [21] - WARN  - Game.Server.Farm.ManorConfigMgr - ManorConfigMgr: loaded 5 manor level tables
+2026-11-24 08:43:17,874 - [21] - WARN  - Game.Server.Farm.ManorConfigMgr - ManorConfigMgr: loaded 23 manor tasks
+2026-11-24 08:43:17,887 - [21] - WARN  - Game.Server.Farm.ManorConfigMgr - ManorConfigMgr: loaded 20 pet food prices
+2026-11-24 08:43:50,958 - [20] - WARN  - Game.Server.Farm.ManorConfigMgr - ManorConfigMgr: loaded 2028 ServerConfig keys
+2026-11-24 08:43:50,970 - [20] - WARN  - Game.Server.Pet.PetExtConfigMgr - PetExtConfigMgr: loaded freeCells=8, maxCells=50, prices=56, awakenSuper=225, equipKindMap=35, superStone=12570, blendStone=12269
+2026-11-24 08:43:52,194 - [20] - WARN  - Game.Server.Elf.ElfMgr - ConvertElfEquipItems: player 2 equipBag=48 propBag=27 linkPalConfig=1500
+2026-11-24 08:43:52,501 - [20] - WARN  - Game.Server.GameObjects.GamePlayer - FightPower: player=2 basicSum=122723 atkBase=10447 defBase=10577 hp=2737693 secondWeapon=501 total=3240239602 fpBasicSum=122723 fpAtk=10447 fpDef=10536
